@@ -1,0 +1,19 @@
+.color-btn {
+    background-color: white;
+    border: 6px solid var(--color);
+    border-radius: 5px;
+    color: black;
+    padding: 10px 15px;
+    margin: 1px 5px;
+    transition: background-color 0.25s;
+    font-size: 1.3em;
+}
+
+.color-btn-pressed {
+    background-color: var(--color);
+}
+
+.color-btn:hover,
+.color-btn:focus {
+    background-color: var(--color);
+}

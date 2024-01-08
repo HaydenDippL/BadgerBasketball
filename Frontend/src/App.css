@@ -1,0 +1,30 @@
+#root {
+    width: 100%;
+    margin: 0 auto;
+    padding: 2rem;
+    text-align: center;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+}
+
+.hbox {
+    display: flex;
+    align-items: center;
+    margin: 20px 20px;
+}
+
+@media (max-width: 800px) {
+    #controls {
+        flex-direction: column;
+    }
+}
+
+.button {
+    height: 50px;
+}

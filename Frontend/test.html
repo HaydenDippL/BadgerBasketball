@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    .positioned-element {
+      position: absolute;
+      background-color: lightblue;
+      padding: 5px;
+      border: 1px solid #ccc;
+      z-index: 1; /* Ensure it's positioned above the table cells */
+    }
+  </style>
+</head>
+<body>
+
+  <table border="1">
+    <tr>
+      <td id="cell1">Cell 1</td>
+      <td id="cell2">Cell 2</td>
+      <td id="cell3">Cell 3</td>
+    </tr>
+  </table>
+
+  <p id="pElement" class="positioned-element">This is a positioned element</p>
+
+  <script>
+    // Get the position of the cell with ID "cell1"
+    const cell1 = document.getElementById('cell1');
+    const cell1Rect = cell1.getBoundingClientRect();
+
+    // Set the position of the p element based on the cell's position
+    const pElement = document.getElementById('pElement');
+    pElement.style.top = cell1Rect.bottom + 'px';
+    pElement.style.left = cell1Rect.left + 'px';
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,12 @@
+.fixed-hbox {
+    display: flex;
+    justify-content: space-between;
+}
+
+.text-container {
+    width: 200px;
+    text-align: center;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
