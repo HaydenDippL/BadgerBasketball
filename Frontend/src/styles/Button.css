@@ -5,15 +5,18 @@
     color: black;
     padding: 10px 15px;
     margin: 1px 5px;
-    transition: background-color 0.25s;
+    transition: background-color 0.25s, transform 0.08s ease-in-out;
     font-size: 1.3em;
+    z-index: 0;
+    overflow: hidden;
 }
 
 .color-btn-pressed {
     background-color: var(--color);
+    transition: background-color 0.25s;
 }
 
 .color-btn:hover,
 .color-btn:focus {
-    background-color: var(--color);
+    transform: scale(1.05);
 }
