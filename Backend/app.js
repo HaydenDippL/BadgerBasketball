@@ -46,8 +46,7 @@ app.get('/data', (req, res) => {
             "content-type": "application/json; charset=UTF-8",
             "x-requested-with": "XMLHttpRequest"
         },
-        "referrer": "http://recwell.ems.wisc.edu/VirtualEMS/CustomBrowseEvents.aspx?data=5S9MEop6DRspUq%2fIVLtxhxYITA4KMOOY1YjgQEZBG%2fCfWmXqsD1ca%2fHqkBJXm4f29jpR3NVpF6Y9ne7PLgU%2b9lE6BC4UWLrlTeMgPgpmbOIcICicxxyMG9qQJvAG8252%2bSa8bnJzCFFzJLq0pKSQQJzbNPfWHWQXPJvPRRVJ9%2fGa%2fORlY42JrCw0eD66hT2PDwuECCF1Nt8%3d",
-        "referrerPolicy": "strict-origin-when-cross-origin",
+        "method": "POST",
         "body": JSON.stringify({
             date: String(year) + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0') + ' 00:00:00',
             data: {
@@ -65,10 +64,7 @@ app.get('/data', (req, res) => {
                 PageSize: 250,
                 DropEventsInPast: true
             }
-        }),
-        "method": "POST",
-        "mode": "cors",
-        "credentials": "include"
+        })
     })
         .then(resp => resp.json())
         .then(data => {
@@ -89,7 +85,7 @@ function filter_schedule(data, year, month, day) {
         .filter(event => event['Location'].substring(0, 5).toLowerCase() === 'court' && event['EventStart'].split('T')[0] === date)
         .map(event => {
             return ATTRIBUTES.reduce((obj, attribute) => {
-                return {...obj, [attribute]: event[attribute]}
+                return {...obj, [attribute]: decodeEntities(event[attribute].trim())}
             }, {})
         })
 
@@ -109,4 +105,23 @@ function valid_input(year, month, day, gym) {
     } catch (error) {
         return false
     }
+}
+
+// https://stackoverflow.com/questions/44195322/a-plain-javascript-way-to-decode-html-entities-works-on-both-browsers-and-node
+function decodeEntities(encodedString) {
+    var translate_re = /&(nbsp|amp|quot|lt|gt|&#39;);/g;
+    var translate = {
+        "nbsp": " ",
+        "amp" : "&",
+        "quot": "\"",
+        "lt"  : "<",
+        "gt"  : ">",
+        "&#39;" : "\'"
+    };
+    return encodedString.replace(translate_re, function(match, entity) {
+        return translate[entity];
+    }).replace(/&#(\d+);/gi, function(match, numStr) {
+        var num = parseInt(numStr, 10);
+        return String.fromCharCode(num);
+    });
 }

@@ -97,7 +97,6 @@ function Schedule(props) {
                             {
                                 row.map((sport, j) => {
                                     const skeleton = sport === 'SKELETON'
-                                    const hour_mark = i % INTERVALS_PER_HOUR == 0 && i != 0
                                     let color = '#788087'
                                     if (colors[sport]) {
                                         color = colors[sport];
@@ -108,7 +107,6 @@ function Schedule(props) {
                                         extra_colors[sport] = color;
                                     }
                                     return <td key={String(j) + ',' + String(i)}
-                                        // className={`newcell ${hour_mark ? 'hour_mark' : ''} ${skeleton ? 'skeleton' : ''}`}
                                         className={`newcell ${skeleton ? 'skeleton' : ''}`}
                                         onClick={skeleton ? null : () => handleClick(j, i)}
                                         style={{
