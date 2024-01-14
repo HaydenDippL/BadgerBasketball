@@ -8,7 +8,7 @@
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "start": "serve -s build"
+    "start": "node sammy.js; serve -s _static -l tcp://0.0.0.0:$PORT -n"
   },
   "dependencies": {
     "bootstrap": "^5.3.2",
