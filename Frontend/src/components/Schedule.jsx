@@ -46,7 +46,7 @@ function Schedule(props) {
         const month = props.date.getMonth() + 1
         const day = props.date.getDate()
         set_schedule(skeleton_schedule())
-        fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
+        fetch(`http://138.197.94.62/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
             .then(res => res.json())
             .then(data => {
                 if (!signal.aborted) {
