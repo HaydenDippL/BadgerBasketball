@@ -3,7 +3,6 @@ import rateLimit from 'express-rate-limit'
 
 const app = express()
 const port = 3999
-const ATTRIBUTES = ['EventName', 'Location', 'EventStart', 'EventEnd']
 
 app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", req.headers.origin)
@@ -16,7 +15,7 @@ app.use(function (req, res, next) {
 
 const limiter = rateLimit({
     windowMs: 1000,
-    max: 50
+    max: 20
 })
 
 app.use(limiter)
@@ -82,11 +81,14 @@ function filter_schedule(data, year, month, day) {
     const date = String(year) + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0')
 
     const schedule = events
-        .filter(event => event['Location'].substring(0, 5).toLowerCase() === 'court' && event['EventStart'].split('T')[0] === date)
+        .filter(event => event['Room'].substring(0, 5).toLowerCase() === 'court' && event['EventStart'].split('T')[0] === date)
         .map(event => {
-            return ATTRIBUTES.reduce((obj, attribute) => {
-                return {...obj, [attribute]: decodeEntities(event[attribute].trim())}
-            }, {})
+            return {
+                'EventName': decodeEntities(event['EventName'].trim()),
+                'Location': decodeEntities(event['Room'].trim()),
+                'EventStart': decodeEntities(event['EventStart'].trim()),
+                'EventEnd': decodeEntities(event['EventEnd'].trim())
+            }
         })
 
     return schedule
@@ -109,7 +111,7 @@ function valid_input(year, month, day, gym) {
 
 // https://stackoverflow.com/questions/44195322/a-plain-javascript-way-to-decode-html-entities-works-on-both-browsers-and-node
 function decodeEntities(encodedString) {
-    var translate_re = /&(nbsp|amp|quot|lt|gt|&#39;);/g;
+    var translate_re = /&(nbsp|amp|quot|lt|gt|&#39;);/g
     var translate = {
         "nbsp": " ",
         "amp" : "&",
@@ -117,11 +119,11 @@ function decodeEntities(encodedString) {
         "lt"  : "<",
         "gt"  : ">",
         "&#39;" : "\'"
-    };
+    }
     return encodedString.replace(translate_re, function(match, entity) {
-        return translate[entity];
+        return translate[entity]
     }).replace(/&#(\d+);/gi, function(match, numStr) {
-        var num = parseInt(numStr, 10);
-        return String.fromCharCode(num);
-    });
+        var num = parseInt(numStr, 10)
+        return String.fromCharCode(num)
+    })
 }

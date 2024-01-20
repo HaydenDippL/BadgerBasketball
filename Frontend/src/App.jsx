@@ -19,7 +19,7 @@ function App() {
     })
     
     return <div className='container'>
-        <h1>Welcome to Badger Basketball</h1>
+        <h1>Welcome to UW Open Rec Roster</h1>
         <p>View the court schedules of the Nick and Bakke. Adjust the date to view the schedule of different days. Select activities you and your friends enjoy to focus only on those activities in the schedule. Click on an activity in the schedule to get more information about that activity.</p>
         <div className='hbox' id='controls'>
             <Legend preferences={preferences} setPreferences={setPreferences}/>
