@@ -10,24 +10,25 @@ const INTERVALS_PER_HOUR = 60 / MINUTE_INTERVALS
 const TOTAL_INTERVALS = (24 - 6) * (INTERVALS_PER_HOUR)
 
 function Schedule(props) {
-    const [schedule, set_schedule] = useState(skeleton_schedule())
+    const [schedule, set_schedule] = useState(empty_schedule())
+    const [skeleton, set_skeleton] = useState(true)
 
     useEffect(() => {
         const updatePositions = () => {
             ["8:00 AM", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM", "8:00 PM", "10:00 PM"].forEach(time => {
-                const table = document.getElementById(`${props.gym}-thead-8`).getBoundingClientRect()
-                const cell_rect = document.getElementById(`${props.gym}-${time}c`).getBoundingClientRect()
-
+                const row = document.getElementById(`${props.gym}-${time}`)
+                const rect = row.getBoundingClientRect()
+                
                 const p = document.getElementById(`${props.gym}-${time}p`)
                 p.style.position = 'absolute'
-                p.style.top = (cell_rect.top - 10) + 'px'
-                p.style.left = cell_rect.left + 'px'
-
+                p.style.top = (rect.top - 10) + 'px'
+                p.style.left = (rect.left - 70) + 'px'
+                
                 const d = document.getElementById(`${props.gym}-${time}d`)
                 d.style.position = 'absolute'
-                d.style.left = cell_rect.right + 'px'
-                d.style.width = (table.right - cell_rect.right) + 'px'
-                d.style.top = cell_rect.top + 'px'
+                d.style.left = rect.left + 'px'
+                d.style.width = row.offsetWidth + 'px'
+                d.style.top = rect.top + 'px'
             })
         }
         
@@ -45,16 +46,18 @@ function Schedule(props) {
         const year = props.date.getFullYear()
         const month = props.date.getMonth() + 1
         const day = props.date.getDate()
-        set_schedule(skeleton_schedule())
+        set_skeleton(true)
         console.log(`Fetching for ${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`)
-        fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
+        // fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
+        fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
             .then(res => res.json())
             .then(data => {
                 if (!signal.aborted) {
                     set_schedule(parse_schedule(data))
+                    set_skeleton(false)
                 }
             })
-    
+
         return function cleanup() {
             abortController.abort()
         }
@@ -83,32 +86,33 @@ function Schedule(props) {
             <thead>
                 <tr>
                     {
-                        ['', 1, 2, 3, 4, 5, 6, 7, 8].map(i => {
+                        [1, 2, 3, 4, 5, 6, 7, 8].map(i => {
                             return <td id={props.gym + '-thead-' + i} key={'court' + i}>{i}</td>
                         })
                     }
                 </tr>
             </thead>
-            <tbody>
+            <tbody className={skeleton ? 'skeleton' : null}>
                 {
                     schedule.map((row, i) => {
                         let time = index_to_time(i)
-                        return <tr key={i}>
-                            <td className='newcell' id={`${props.gym}-${time}c`} style={{minWidth: '70px'}}></td>
+                        return <tr key={i} id={`${props.gym}-${time}`}>
                             {
                                 row.map((sport, j) => {
-                                    const skeleton = sport === 'SKELETON'
-                                    let color = '#788087'
-                                    if (colors[sport]) {
-                                        color = colors[sport];
+                                    let color
+                                    if (sport === 'EMPTY') {
+                                        color = '#788087'
+                                    } else if (colors[sport]) {
+                                        color = colors[sport]
                                     } else if (extra_colors[sport]) {
-                                        color = extra_colors[sport];
-                                    } else if (c < random_colors.length) {
-                                        color = random_colors[c++];
-                                        extra_colors[sport] = color;
+                                        color = extra_colors[sport]
+                                    } else {
+                                        color = random_colors[c]
+                                        extra_colors[sport] = color
+                                        c = (c + 1) % random_colors.length
                                     }
                                     return <td key={String(j) + ',' + String(i)}
-                                        className={`newcell ${skeleton ? 'skeleton' : ''}`}
+                                        className='newcell'
                                         onClick={skeleton ? null : () => handleClick(j, i)}
                                         style={{
                                             backgroundColor: color,
@@ -148,10 +152,10 @@ function index_to_time(i) {
     return time
 }
 
-function skeleton_schedule() {
+function empty_schedule() {
     let s = new Array(TOTAL_INTERVALS)
     for (let i = 0; i < TOTAL_INTERVALS; ++i) {
-        s[i] = new Array(8).fill('SKELETON')
+        s[i] = new Array(8).fill('EMPTY')
     } return s
 }
 

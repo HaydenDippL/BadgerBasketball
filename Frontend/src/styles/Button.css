@@ -7,8 +7,8 @@
     margin: 1px 5px;
     transition: background-color 0.25s, transform 0.05s ease-in-out;
     font-size: 1.3em;
-    z-index: 0;
     overflow: hidden;
+    cursor: pointer;
 }
 
 .color-btn-pressed {

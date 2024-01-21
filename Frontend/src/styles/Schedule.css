@@ -1,10 +1,41 @@
-table {
-    border-collapse: collapse;
+/* Skeleton Loading */
+
+tbody.skeleton {
+    position: relative;
 }
 
-thead > tr > td {
-    text-align: center;
+tbody.skeleton:before {
+    content: '';
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    animation: skeleton-loading 0.75s linear infinite alternate;
+}
+
+@keyframes skeleton-loading {
+    0% {
+        background-color: hsl(200, 20%, 70%);
+    }
+
+    100% {
+        background-color: hsl(200, 20%, 95%);
+    }
+}
+
+/* Table Styling */
+
+table {
+    border-collapse: collapse;
+    margin-left: 80px;
+}
+
+td {
     width: 60px;
+    height: 3px;
 }
 
 h2 {
@@ -12,7 +43,8 @@ h2 {
     padding-bottom: 10px;
 }
 
-div.border {
+.border {
+    /* position: relative; */
     border-radius: 15px;
     text-align: center;
     display: flex;
@@ -25,30 +57,8 @@ div.border {
     padding-right: 13px;
 }
 
-.newcell {
-    width: 10px;
-    height: 3px;
-}
-
-.hour_mark {
-    border-top: solid rgb(0, 0, 0, 0.13);
-}
-
 .new_div {
     height: 2px;
     background-color: rgb(0, 0, 0, 0.13);
-}
-
-.skeleton {
-    animation: skeleton-loading 1.5s linear infinite;
-}
-
-@keyframes skeleton-loading {
-    0%, 100% {
-        background-color: #85827f;
-    }
-
-    50% {
-        background-color: hsl(200, 46%, 95%);
-    }
+    z-index: 2;
 }
