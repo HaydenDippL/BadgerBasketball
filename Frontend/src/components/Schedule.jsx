@@ -48,8 +48,8 @@ function Schedule(props) {
         const day = props.date.getDate()
         set_skeleton(true)
         console.log(`Fetching for ${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`)
-        // fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
-        fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
+        fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
+        // fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
             .then(res => res.json())
             .then(data => {
                 if (!signal.aborted) {
