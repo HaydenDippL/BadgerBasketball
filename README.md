@@ -4,9 +4,9 @@ A pet project by Hayden Dippel and Bailey Kau to more easily display and view th
 
 Go Badgers!!
 
-## 🥳🥳🥳 The [site](www.uwopenrecroster.com) is up 🥳🥳🥳
+## 🥳🥳🥳 The [site](https://www.uwopenrecroster.com) is up 🥳🥳🥳
 
-Super excited to annouce that the site is up. To view the website, head to [www.uwopenrecroster.com](www.uwopenrecroster.com)!
+Super excited to annouce that the site is up. To view the website, head to [www.uwopenrecroster.com](https://www.uwopenrecroster.com)!
 
 ![Image of the Badger Basketball Website](BadgerBasketball.png)
 
@@ -38,6 +38,8 @@ npm run dev
 ```
 
 Now you can navigate to [http://localhost:5173](http://localhost:5173) and view the locally run website. The backend is run through port `3999`, [http://localhost:3999/data?date=2024-01-22&gym=Bakke](http://localhost:3999/data?date=2024-01-22&gym=Bakke).
+
+Additionally, navigate to `src/components/Schedule.jsx` and find the fetch statements. There are two, one for the actual backend, and one for your local backend, comment out the offical backend and un-comment the local backend. Now you will call your local backend.
 
 ### Frontend
 
