@@ -8,8 +8,8 @@ tbody.skeleton::before {
     content: '';
     /* display: block; */
     position: absolute;
-    top: 0;
-    left: 0;
+    top: 0px;
+    left: 0px;
     height: 100%;
     width: 100%;
     z-index: 1;
@@ -58,6 +58,8 @@ h2 {
 
 /* Hour Marks */
 
+/* We user an after element to display the hour marks instead of a border
+because the grayscale from the focus mode will erase the hour marks */
 tr.hour {
     position: relative;
 }
@@ -65,8 +67,8 @@ tr.hour {
 tr.hour::after {
     content: "";
     position: absolute;
-    left: 0;
-    top: 0;
+    left: 0px;
+    top: 0px;
     width: 100%;
     height: 2px;
     background-color: rgba(0, 0, 0, 0.15);
