@@ -9,6 +9,7 @@
     font-size: 1.3em;
     overflow: hidden;
     cursor: pointer;
+    user-select: none;
 }
 
 .color-btn-pressed {

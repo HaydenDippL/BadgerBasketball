@@ -4,9 +4,9 @@ tbody.skeleton {
     position: relative;
 }
 
-tbody.skeleton:before {
+tbody.skeleton::before {
     content: '';
-    display: block;
+    /* display: block; */
     position: absolute;
     top: 0;
     left: 0;
@@ -44,7 +44,6 @@ h2 {
 }
 
 .border {
-    /* position: relative; */
     border-radius: 15px;
     text-align: center;
     display: flex;
@@ -57,8 +56,33 @@ h2 {
     padding-right: 13px;
 }
 
-.new_div {
+/* Hour Marks */
+
+tr.hour {
+    position: relative;
+}
+
+tr.hour::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
     height: 2px;
-    background-color: rgb(0, 0, 0, 0.13);
+    background-color: rgba(0, 0, 0, 0.15);
+    pointer-events: none; /* ensures that clicking directly on the line still means that you still get the message */
     z-index: 2;
+}
+
+td.time {
+    position: relative;
+}
+
+td.time::before {
+    content: var(--time);
+    position: absolute;
+    left: -70px;
+    top: -10px;
+    pointer-events: none; /* ensures that clicking the times do not give the court one message */
+    user-select: text;
 }

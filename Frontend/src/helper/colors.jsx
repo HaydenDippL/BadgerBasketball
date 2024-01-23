@@ -1,12 +1,14 @@
+// Inspect the colors at https://coolors.co/c19337
+
 export const colors = {
-    'No Event Scheduled': '#85827f',
-    'Open Rec Basketball': '#fc8617',
-    'Open Rec Volleyball': '#fae7d4',
-    'Open Rec Badminton / Pickleball': '#46D9E7',
-    'Open Rec Futsal': '#1ab837',
-    'Army ROTC': '#C2BE6C',
-    'Navy ROTC': '#3F3F5E',
-    'Air Force ROTC': '#C19337'
+    'No Event Scheduled': '#85827f', // gray
+    'Open Rec Basketball': '#fc8617', // bright orange
+    'Open Rec Volleyball': '#fae7d4', // tan
+    'Open Rec Badminton / Pickleball': '#46D9E7', // bright blue
+    'Open Rec Futsal': '#1ab837', // bright green
+    'Army ROTC': '#C2BE6C', // army yellow
+    'Navy ROTC': '#3F3F5E', // navy blue
+    'Air Force ROTC': '#C19337' // gold yellow
 }
 
 export const random_colors = [

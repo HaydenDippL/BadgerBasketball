@@ -8,9 +8,21 @@ import Schedule from './components/Schedule'
 import './App.css'
 
 function App() {
-    window.history.scrollRestoration = 'manual'
 
-    const [date, setDate] = useState(new Date())
+    // Gets the US Chicago Central time
+    function get_central_time() {
+        const current_date = new Date()
+        return new Date(current_date.toLocaleString('en-US', {
+            timeZone: 'America/Chicago'
+        }))
+    }
+
+    // The date state variable represents the date of the schedules
+    // according to the US Chicago Central time
+    const [date, setDate] = useState(get_central_time())
+
+    // The preferences state variable represents the different buttons
+    // the user can press to focus on just that sport, or many sport
     const [preferences, setPreferences] = useState({
         'Open Rec Basketball': false,
         'Open Rec Volleyball': false,

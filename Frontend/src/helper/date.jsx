@@ -23,6 +23,7 @@ export const num_to_month = [
     'December'
 ]
 
+// returns the date in the form -- Monday, January 22nd 2024
 export function pretty_date(date) {
     let suffix = 'th'
     if (date.getDate() % 10 == 1 && date.getDate() != 11) suffix = 'rst'

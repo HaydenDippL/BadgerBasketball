@@ -1,12 +1,11 @@
-import { useEffect } from 'react'
-
-import Button from './Button.jsx'
+import Button from './PreferenceButton.jsx'
 import { colors } from '../helper/colors'
 
 import '../styles/Legend.css'
 
 function Legend(props) {
 
+    // Sets or unsets the pressed preference
     function handleClick(preference, style) {
         props.setPreferences(p => {
             return {
@@ -19,7 +18,6 @@ function Legend(props) {
     return <div className='vbox'>
         {
             Object.entries(props.preferences).map(([preference, active]) => {
-                const color = colors[preference]
                 return <Button key={preference}
                     active={active}
                     color={colors[preference]}

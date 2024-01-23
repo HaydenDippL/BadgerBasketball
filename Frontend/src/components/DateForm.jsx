@@ -1,17 +1,19 @@
 import { Button } from 'react-bootstrap'
 
-import { num_to_day, pretty_date } from '../helper/time'
+import { num_to_day, pretty_date } from '../helper/date'
 
 import '../styles/DateForm.css'
 
 function DateForm(props) {
 
+    // This function sets the date to yesterday
     function yesterday() {
         let yest = new Date(props.date)
         yest.setDate(yest.getDate() - 1)
         props.setDate(yest)
     }
 
+    // This function sets the date to tomorrow
     function tomorrow() {
         let tomor = new Date(props.date)
         tomor.setDate(tomor.getDate() + 1)

@@ -10,48 +10,39 @@ const INTERVALS_PER_HOUR = 60 / MINUTE_INTERVALS
 const TOTAL_INTERVALS = (24 - 6) * (INTERVALS_PER_HOUR)
 
 function Schedule(props) {
+    // The schedule state variable is a 2d array that is 216 rows by 8 columns.
+    // This represents all the five minute intervals in a 6-midnight day for 8 courts
+    // Each cell in the schedule array is a string of the sport. The indexing formulas are
+    // index = 12 * (hour - 6) + minute // 5
+    // index 0 represents 6:00 AM - 6:05 AM
     const [schedule, set_schedule] = useState(empty_schedule())
+
+    // The skeleton state variable indicates whether the schedule should be
+    // in a skeleton loading state or not.
     const [skeleton, set_skeleton] = useState(true)
 
+    // On load and date change fetch the schedule data from backend:
+    // https://www.uwopenrecrosterbackend.xyz/data
     useEffect(() => {
-        const updatePositions = () => {
-            ["8:00 AM", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM", "8:00 PM", "10:00 PM"].forEach(time => {
-                const row = document.getElementById(`${props.gym}-${time}`)
-                const rect = row.getBoundingClientRect()
-                
-                const p = document.getElementById(`${props.gym}-${time}p`)
-                p.style.position = 'absolute'
-                p.style.top = (rect.top - 10) + 'px'
-                p.style.left = (rect.left - 70) + 'px'
-                
-                const d = document.getElementById(`${props.gym}-${time}d`)
-                d.style.position = 'absolute'
-                d.style.left = rect.left + 'px'
-                d.style.width = row.offsetWidth + 'px'
-                d.style.top = rect.top + 'px'
-            })
-        }
-        
-        updatePositions()
-        window.addEventListener('resize', updatePositions)
-        return () => {
-            window.removeEventListener('resize', updatePositions)
-        }
-    }, [])
-
-    useEffect(() => {
+        // Will not display data if another fetch has occured
+        // This means that users who spam the next button will only have the current schedule displayed.
+        // There was an issue where before if you double clicked you would have to load the first schedule and display it before viewing the second schedule.
         const abortController = new AbortController()
         const signal = abortController.signal
     
         const year = props.date.getFullYear()
-        const month = props.date.getMonth() + 1
+        const month = props.date.getMonth() + 1 // month is 0-indexed, add one to make 1-indexed
         const day = props.date.getDate()
+
+        // Initiate the skeleton load animation
         set_skeleton(true)
-        console.log(`Fetching for ${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`)
+
+        // console.log(`Fetching https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`)
         fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
-        // fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
+        // fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal }) // used for local testing
             .then(res => res.json())
             .then(data => {
+                // if this is the current schedule, display it
                 if (!signal.aborted) {
                     set_schedule(parse_schedule(data))
                     set_skeleton(false)
@@ -63,20 +54,34 @@ function Schedule(props) {
         }
     }, [props.date])
 
+
+    // The function will find the start and end times of events based on the
+    // schedule and send a browser alert detailing which gym, which court, the
+    // activity, and the times that activity goes to
     function handleClick(court, i) {
         const sport = schedule[i][court]
+
+        // Backtrack as far up the schedule as possible that has the same sport
         let start = i
         while (start >= 0 && schedule[start][court] == sport) {
             --start
-        } ++start
+        } ++start // add back to start otherwise time would be 5 minutes late
+
+        // Iterate as far down the schedule as possible that has the same sport
         let end = i
         while (end < TOTAL_INTERVALS && schedule[end][court] == sport) {
             ++end
         }
+
         alert(`${index_to_time(start)} - ${index_to_time(end)}: ${sport} on court ${court + 1} in the ${props.gym}`)
     }
 
+    // Checks if the user has selected a preference button and is used to gray out non-selected sports
     const focus_mode = Object.entries(props.preferences).some(([preference, active]) => active)
+
+    // Used for non-explicitly listed sport-color combinations in src/helper/colors
+    // dynamically allocates colors for specific sport and remembers which colors are
+    // assinged to each sport
     let c = 0
     let extra_colors = {}
 
@@ -96,13 +101,12 @@ function Schedule(props) {
                 {
                     schedule.map((row, i) => {
                         let time = index_to_time(i)
-                        return <tr key={i} id={`${props.gym}-${time}`}>
+                        let is_hour_mark = i % (2 * INTERVALS_PER_HOUR) === 0 && i !== 0
+                        return <tr key={i} id={`${props.gym}-${time}`} className={is_hour_mark ? 'hour' : null}>
                             {
                                 row.map((sport, j) => {
                                     let color
-                                    if (sport === 'EMPTY') {
-                                        color = '#788087'
-                                    } else if (colors[sport]) {
+                                    if (colors[sport]) {
                                         color = colors[sport]
                                     } else if (extra_colors[sport]) {
                                         color = extra_colors[sport]
@@ -112,11 +116,12 @@ function Schedule(props) {
                                         c = (c + 1) % random_colors.length
                                     }
                                     return <td key={String(j) + ',' + String(i)}
-                                        className='newcell'
+                                        className={is_hour_mark && j === 0 ? 'time' : null}
                                         onClick={skeleton ? null : () => handleClick(j, i)}
                                         style={{
                                             backgroundColor: color,
                                             filter: !focus_mode || props.preferences[sport] ? '' : 'grayscale(100%)',
+                                            '--time': `"${index_to_time(i)}"` // Need to surrond --time by double quotes in order to work with the content attribute
                                         }}
                                     />
                                 })
@@ -126,25 +131,19 @@ function Schedule(props) {
                 }
             </tbody>
         </table>
-        {
-            ["8:00 AM", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM", "8:00 PM", "10:00 PM"].map(time => {
-                return <p key={time + 'p'} id={`${props.gym}-${time}p`}>{time}</p>
-            })
-        }
-        {
-            ["8:00 AM", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM", "6:00 PM", "8:00 PM", "10:00 PM"].map(time => {
-                return <div className={'new_div'} key={time + 'd'} id={`${props.gym}-${time}d`}></div>
-            })
-        }
     </div>
 }
 
+// Takes a time and transforms it to an index in the schedule
+// index = 12 * (hour - 6) + minute // 5
 function time_to_index(hour, minute) {
     hour = Number(hour)
     minute = Number(minute)
     return hour === 0 ? TOTAL_INTERVALS : (hour - 6) * INTERVALS_PER_HOUR + Math.floor(minute / MINUTE_INTERVALS)
 }
 
+// Takes an index in the schedule and transforms it to the time
+// index = 12 * (hour - 6) + minute // 5
 function index_to_time(i) {
     const hour = Math.floor(i / INTERVALS_PER_HOUR) + 6
     const minute = (i % INTERVALS_PER_HOUR) * MINUTE_INTERVALS
@@ -152,18 +151,20 @@ function index_to_time(i) {
     return time
 }
 
+// Generates a 216 by 8 2d array schedule with all the
+// cell contents being the string "No Event Scheduled"
 function empty_schedule() {
     let s = new Array(TOTAL_INTERVALS)
     for (let i = 0; i < TOTAL_INTERVALS; ++i) {
-        s[i] = new Array(8).fill('EMPTY')
+        s[i] = new Array(8).fill('No Event Scheduled')
     } return s
 }
 
+// The schedule from the backend is sent in a condensed format. This
+// function transforms the condensed schedule into the 2d array needed
+// for the schedule state variable.
 function parse_schedule(events) {
-    let schedule = new Array(TOTAL_INTERVALS)
-    for (let i = 0; i < TOTAL_INTERVALS; ++i) {
-        schedule[i] = new Array(8).fill('No Event Scheduled')
-    }
+    let schedule = empty_schedule()
 
     events.forEach(event => {
         const sport = event['EventName']
