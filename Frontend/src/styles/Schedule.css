@@ -6,7 +6,7 @@ tbody.skeleton {
 
 tbody.skeleton::before {
     content: '';
-    /* display: block; */
+    display: block;
     position: absolute;
     top: 0px;
     left: 0px;
@@ -74,6 +74,7 @@ tr.hour::after {
     background-color: rgba(0, 0, 0, 0.15);
     pointer-events: none; /* ensures that clicking directly on the line still means that you still get the message */
     z-index: 2;
+    display: block;
 }
 
 td.time {
@@ -81,7 +82,7 @@ td.time {
 }
 
 td.time::before {
-    content: var(--time);
+    content: attr(time);
     position: absolute;
     left: -70px;
     top: -10px;

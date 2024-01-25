@@ -121,8 +121,8 @@ function Schedule(props) {
                                         style={{
                                             backgroundColor: color,
                                             filter: !focus_mode || props.preferences[sport] ? '' : 'grayscale(100%)',
-                                            '--time': `"${index_to_time(i)}"` // Need to surrond --time by double quotes in order to work with the content attribute
                                         }}
+                                        time={`${index_to_time(i)}`}
                                     />
                                 })
                             }
