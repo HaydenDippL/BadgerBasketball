@@ -8,11 +8,11 @@ Go Badgers!!
 
 Super excited to annouce that the site is up. To view the website, head to [www.uwopenrecroster.com](https://www.uwopenrecroster.com)!
 
-![Image of the Badger Basketball Website](BadgerBasketball.png)
+![Image of the UW Open Rec Roster Website](WebScreenshot.png) 
 
 ## For Developers
 
-There are currently two directories in this repo, [Frontend](#frontend) and [Backend](#backend). The links take you to the documentation for the respective directories. Frontend contains all the html, css, and js used in the project. React with Vite was used in this project. The backend is at [https://www.uwopenrecrosterbackend.xyz](https://www.uwopenrecrosterbackend.xyz) with the parameters date and gym. An example is [https://www.uwopenrecrosterbackend.xyz/data?date=2024-01-25&gym=Bakke](https://www.uwopenrecrosterbackend.xyz/data?date=2024-01-25&gym=Bakke), which grabs the gym schedule at the Bakke for January 25, 2024.
+There are currently three directories in this repo, [Frontend](#frontend), [Backend](#backend), and [Mobile](#mobile). The links take you to the documentation for the respective directories. Frontend contains all the html, css, and js used in the project. React with Vite was used in this project. Backend is at [https://www.uwopenrecrosterbackend.xyz](https://www.uwopenrecrosterbackend.xyz) with the parameters date and gym. An example is [https://www.uwopenrecrosterbackend.xyz/data?date=2024-01-25&gym=Bakke](https://www.uwopenrecrosterbackend.xyz/data?date=2024-01-25&gym=Bakke), which grabs the gym schedule at the Bakke for January 25, 2024.
 
 To run this project locally, open a terminal and git clone the repo
 
@@ -40,6 +40,16 @@ npm run dev
 Now you can navigate to [http://localhost:5173](http://localhost:5173) and view the locally run website. The backend is run through port `3999`, [http://localhost:3999/data?date=2024-01-22&gym=Bakke](http://localhost:3999/data?date=2024-01-22&gym=Bakke).
 
 Additionally, navigate to `src/components/Schedule.jsx` and find the fetch statements. There are two, one for the actual backend, and one for your local backend, comment out the offical backend and un-comment the local backend. Now you will call your local backend.
+
+If you would like to locally run the app navigate to the Mobile folder and then run the following
+
+```
+cd Mobile
+npm install
+npm start
+```
+
+Make sure to have downloaded Expo Go on your phone and scan the qr code in the terminal once it appears. Unfortunately, I do not know a way to run the local backend with the Mobile dev build... you just connect to the cloud backend.
 
 ### Frontend
 
@@ -69,8 +79,16 @@ The Backend is set to memoize the schedules on a daily basis, using `sqlite3` as
 
 Future plans would include logging
 
+### Mobile
+
+The Mobile version of the app has not been deployed yet, but the dev build is up and working on your local machine.
+
+<img src="MobileScreenshot.png" alt="Image of the UW Open Rec Roster App" height="800">
+
+A key difference between the web and mobile versions is that the date controls a fixed at the bottom of the screen to make it easier for those navigating.
+
+The layout of the code is nearly identical to Frontend, with a few minor caveats.
+
 ## What's Next 🧐!
 
-The next set of plans is to create a new directory in this repo --- a mobile app folder with react native code! It would be available for both iOS and Android and would make it even more accessible and helpful for our users.
-
-Additionally we want to create a dashboard website with the analytics of the website and the app, displaying user counts and a map of madison diplaying all of our users.
+We want to create a dashboard website with the analytics of the website and the app, displaying user counts and a map of madison diplaying all of our users.
