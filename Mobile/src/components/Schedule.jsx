@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'
-import { View, Text, Pressable, StyleSheet } from 'react-native'
-import { colors, random_colors } from '../helper/colors'
+import { useState, useRef, useEffect } from 'react'
+import { View, Text, Pressable, StyleSheet, Animated } from 'react-native'
+import { colors, random_colors, grayscale } from '../helper/colors'
 
 const MINUTE_INTERVALS = 5
 
@@ -15,6 +15,42 @@ function Schedule(props) {
     // index 0 represents 6:00 AM - 6:05 AM
     const [schedule, set_schedule] = useState(empty_schedule())
 
+    // The skeleton state variable indicates whether the schedule should be
+    // in a skeleton loading state or not.
+    const [skeleton, set_skeleton] = useState(true)
+
+    const skeleton_color = useRef(new Animated.Value(0)).current
+
+    function start_skeleton_animation() {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(skeleton_color, {
+                    toValue: 1,
+                    duration: 750,
+                    useNativeDriver: false
+                }),
+                Animated.timing(skeleton_color, {
+                    toValue: 0,
+                    duration: 750,
+                    useNativeDriver: false
+                })
+            ])
+        ).start()
+    }
+
+    function stop_skeleton_animation() {
+        skeleton_color.stopAnimation()
+        skeleton_color.setValue(0)
+    }
+
+    useEffect(() => {
+        if (skeleton) {
+            start_skeleton_animation()
+        } else {
+            stop_skeleton_animation()
+        }
+    }, [skeleton])
+
     // On load and date change fetch the schedule data from backend:
     // https://www.uwopenrecrosterbackend.xyz/data
     useEffect(() => {
@@ -28,6 +64,8 @@ function Schedule(props) {
         const month = props.date.getMonth() + 1 // month is 0-indexed, add one to make 1-indexed
         const day = props.date.getDate()
 
+        // Initiate the skeleton load animation
+        set_skeleton(true)
 
         // console.log(`Fetching https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`)
         fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
@@ -37,6 +75,7 @@ function Schedule(props) {
                 // if this is the current schedule, display it
                 if (!signal.aborted) {
                     set_schedule(parse_schedule(data))
+                    set_skeleton(false)
                 }
             })
 
@@ -75,23 +114,35 @@ function Schedule(props) {
     let c = 0
     let extra_colors = {}
 
-    return <View>
-        <Text>{`${props.gym} Courts`}</Text>
-        <View style={styles.table}>
-            <View style={styles.row}>
-                {
-                    [1, 2, 3, 4, 5, 6, 7, 8].map(i => {
-                        return <View key={i} style={styles.headerCell}>
-                            <Text>{i}</Text>
-                        </View>
-                    })
-                }
-            </View>
-            {
-                schedule.map((row, i) => {
-                    let time = index_to_time(i)
+    return <View style={styles.container}>
+        <Text style={styles.title}>{`${props.gym} Courts`}</Text>
+        <View style={styles.hbox}>
+            <View style={styles.timeCell}/>
+            <View style={styles.vbox}>
+                <View style={styles.hbox}>
+                    {
+                        [1, 2, 3, 4, 5, 6, 7, 8].map(i => {
+                            return <View key={i} style={styles.headerCell}>
+                                <Text style={{fontSize: 20}}>{i}</Text>
+                            </View>
+                        })
+                    }
+                </View>
+                {skeleton ?
+                    <Animated.View style={[styles.skeletonView, {
+                        backgroundColor: skeleton_color.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: ['#edeeee', '#c4c4c4'],
+                        })
+                    }]}/>
+                    :
+                    schedule.map((row, i) => {
+                        let time = index_to_time(i)
                         let is_hour_mark = i % (2 * INTERVALS_PER_HOUR) === 0 && i !== 0
-                        return <View key={i} style={styles.row}>
+                        return <View key={i} style={styles.hbox}>
+                            { is_hour_mark ?
+                                <Text style={styles.time}>{time}</Text> : null
+                            }
                             {
                                 row.map((sport, j) => {
                                     let color
@@ -107,15 +158,17 @@ function Schedule(props) {
                                     return <Pressable key={`${j},${i}}`} onPress={() => handleClick(j, i)}>
                                         <View style={
                                             [styles.cell, {
-                                                backgroundColor: color
+                                                backgroundColor: !focus_mode || props.preferences[sport] ? color : grayscale(color),
+                                                borderTopWidth: is_hour_mark ? 2 : null,
                                             }]
                                         }/>
                                     </Pressable>
                                 })
                             }
                         </View>
-                })
-            }
+                    })
+                }
+            </View>
         </View>
     </View>
 }
@@ -172,15 +225,30 @@ function parse_schedule(events) {
 export default Schedule
 
 const styles = StyleSheet.create({
-    table: {
-        flexDirection: 'column',
-        borderColor: 'black',
-        borderWidth: 2,
+
+    container: {
+        alignContent: 'center',
+        alignItems: 'center',
+        borderColor: 'rgb(222, 226, 230)',
+        borderWidth: 1,
+        margin: 10,
+        borderRadius: 15,
+        padding: 8,
     },
-    
-    row: {
-        flexDirection: 'row',
-        margin: 0
+
+    title: {
+        fontSize: 34,
+        marginVertical: 10
+    },
+
+    // Table
+
+    hbox: {
+        flexDirection: 'row'
+    },
+
+    vbox: {
+        flexDirection: 'column'
     },
     
     cell: {
@@ -188,12 +256,37 @@ const styles = StyleSheet.create({
         padding: 0,
         width: 38,
         height: 3,
+        maxHeight: 3,
+        borderColor: 'rgba(0, 0, 0, 0.15)',
+        borderWidth: 0
     },
 
     headerCell: {
         margin: 0,
         padding: 0,
         width: 38,
-        alignItems: 'center'
+        alignItems: 'center',
+    },
+
+    timeCell : {
+        width: 64
+    },
+
+    // Skeleton
+
+    skeletonView: {
+        height: 648,
+        width: 304,
+    },
+
+    // Time Text
+
+    time: {
+        zIndex: 2,
+        position: 'absolute',
+        transform: [
+            {translateX: -65},
+            {translateY: -7}
+        ]
     }
 })

@@ -22,3 +22,12 @@ export const random_colors = [
     '#421909', // brown
     '#306856', // dark green
 ]
+
+// converts a hex string to a grayscale hex string
+export function grayscale(color) {
+    const red = parseInt(color.substring(1, 3), 16)
+    const blue = parseInt(color.substring(3, 5), 16)
+    const green = parseInt(color.substring(5, 7), 16)
+    const gray = Math.floor(0.299 * red + 0.114 * blue + 0.587 * green).toString(16)
+    return '#' + gray + gray + gray
+}

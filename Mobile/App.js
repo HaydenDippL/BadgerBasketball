@@ -46,11 +46,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 50,
         textAlign: 'center',
-        marginBottom: 20
+        marginTop: 50,
+        marginBottom: 20,
     },
     
     text: {
         fontSize: 20,
-        textAlign: 'center'
+        textAlign: 'center',
+        marginBottom: 15
     }
 })
