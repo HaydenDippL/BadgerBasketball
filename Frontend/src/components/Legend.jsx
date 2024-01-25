@@ -1,4 +1,4 @@
-import Button from './PreferenceButton.jsx'
+import PreferenceButton from './PreferenceButton.jsx'
 import { colors } from '../helper/colors'
 
 import '../styles/Legend.css'
@@ -18,12 +18,12 @@ function Legend(props) {
     return <div className='vbox'>
         {
             Object.entries(props.preferences).map(([preference, active]) => {
-                return <Button key={preference}
+                return <PreferenceButton key={preference}
                     active={active}
                     color={colors[preference]}
                     onClick={() => {handleClick(preference)}}>
                     {preference}
-                </Button>
+                </PreferenceButton>
             })
         }
     </div>
