@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Row, Col } from 'react-bootstrap'
+import { useState, useEffect } from 'react'
+import { Row, Col, Button } from 'react-bootstrap'
 
 import DateForm from './components/DateForm'
 import Legend from './components/Legend'
@@ -29,8 +29,41 @@ function App() {
         'Open Rec Badminton / Pickleball': false,
         'Open Rec Futsal': false
     })
+
+    const [modal, setModal] = useState({
+        active: false,
+        gym: null,
+        court: null,
+        start: null,
+        end: null,
+        sport: null
+    })
+
+    function show_modal(gym, court, start, end, sport) {
+        setModal({
+            gym: gym,
+            court: court,
+            start: start,
+            end: end,
+            sport: sport
+        })
+
+        const modal = document.querySelector('dialog')
+        modal.showModal()
+    }
+
+    function hide_modal() {
+        const modal = document.querySelector('dialog')
+        modal.close()
+    }
     
     return <div className='container'>
+        <dialog>
+            <h1>{modal.sport}</h1>
+            <h2>{`${modal.gym}: Court ${modal.court}`}</h2>
+            <h3>{`${modal.start} - ${modal.end}`}</h3>
+            <Button className='modal-button' onClick={hide_modal} variant='danger'>Close</Button>
+        </dialog>
         <h1>Welcome to UW Open Rec Roster</h1>
         <p>View the court schedules of the Nick and Bakke. Adjust the date to view the schedule of different days. Select activities you and your friends enjoy to focus only on those activities in the schedule. Click on an activity in the schedule to get more information about that activity.</p>
         <div className='hbox' id='controls'>
@@ -45,7 +78,7 @@ function App() {
                     lg={6}
                     key={gym}
                     >
-                        <Schedule gym={gym} preferences={preferences} date={date}/>
+                        <Schedule show_modal={show_modal} gym={gym} preferences={preferences} date={date}/>
                     </Col>
                 })
             }

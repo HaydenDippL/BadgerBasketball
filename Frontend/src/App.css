@@ -19,12 +19,27 @@
     margin: 20px 20px;
 }
 
+.modal-button {
+    margin-top: 40px;
+    height: 100px;
+    width: 400px;
+    font-size: 40px;
+}
+
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+dialog {
+    background-color: white;
+    border: none;
+    color: black;
+    border-radius: 5px;
+    padding: 50px;
+}
+
 @media (max-width: 800px) {
     #controls {
         flex-direction: column;
     }
-}
-
-.button {
-    height: 50px;
 }

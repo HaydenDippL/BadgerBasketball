@@ -73,7 +73,9 @@ function Schedule(props) {
             ++end
         }
 
-        alert(`${index_to_time(start)} - ${index_to_time(end)}: ${sport} on court ${court + 1} in the ${props.gym}`)
+        // alert(`${index_to_time(start)} - ${index_to_time(end)}: ${sport} on court ${court + 1} in the ${props.gym}`)
+
+        props.show_modal(props.gym, court + 1, index_to_time(start), index_to_time(end), sport)
     }
 
     // Checks if the user has selected a preference button and is used to gray out non-selected sports
