@@ -21,8 +21,8 @@
 
 .modal-button {
     margin-top: 40px;
-    height: 100px;
-    width: 400px;
+    height: 6rem;
+    width: calc(100% - 10px);
     font-size: 40px;
 }
 
