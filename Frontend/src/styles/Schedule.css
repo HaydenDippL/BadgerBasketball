@@ -17,20 +17,9 @@ tbody.skeleton::before {
 }
 
 td.skeleton {
-    position: relative;
-}
-
-td.skeleton::before {
-    content: "";
-    display: block;
-    position: absolute;
-    top: 0%;
-    left: 0%;
-    height: 100%;
-    width: 100%;
-    z-index: 1;
     animation: skeleton-loading 0.75s linear infinite alternate;
 }
+
 @keyframes skeleton-loading {
     0% {
         background-color: hsl(200, 20%, 70%);

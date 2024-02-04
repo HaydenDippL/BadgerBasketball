@@ -92,7 +92,7 @@ function Schedule(props) {
     let extra_colors = {}
 
     return <div id={`${props.gym}-schedule`} className='border'>
-        <h2>{`${props.gym} Courts ${APPLE}`}</h2>
+        <h2>{`${props.gym} Courts`}</h2>
         <table>
             <thead>
                 <tr>
@@ -103,7 +103,7 @@ function Schedule(props) {
                     }
                 </tr>
             </thead>
-            <tbody className={skeleton ? 'skeleton' : null}>
+            <tbody className={!APPLE && skeleton ? 'skeleton' : null}>
                 {
                     schedule.map((row, i) => {
                         let time = index_to_time(i)
