@@ -9,8 +9,11 @@ const MINUTE_INTERVALS = 5
 const INTERVALS_PER_HOUR = 60 / MINUTE_INTERVALS
 const TOTAL_INTERVALS = (24 - 6) * (INTERVALS_PER_HOUR)
 
-
-
+// iOS has some issues with it's browsers, where they do not
+// support ::before and ::after elements when used in tables
+// on any element but <td>: <table>, <thead>, <tbody>, and <tr>.
+// Conditional rendering is used for apple devices, despite the
+// lag incurred.
 const APPLE = /iPhone|iPad/i.test(navigator.userAgent)
 
 function Schedule(props) {
@@ -21,8 +24,6 @@ function Schedule(props) {
     // index 0 represents 6:00 AM - 6:05 AM
     const [schedule, set_schedule] = useState(empty_schedule())
 
-    // The skeleton state variable indicates whether the schedule should be
-    // in a skeleton loading state or not.
     const [skeleton, set_skeleton] = useState(true)
 
     // On load and date change fetch the schedule data from backend:
@@ -41,7 +42,6 @@ function Schedule(props) {
         // Initiate the skeleton load animation
         set_skeleton(true)
 
-        // console.log(`Fetching https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`)
         fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
         // fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal }) // used for local testing
             .then(res => res.json())
@@ -65,19 +65,15 @@ function Schedule(props) {
     function handleClick(court, i) {
         const sport = schedule[i][court]
 
-        // Backtrack as far up the schedule as possible that has the same sport
         let start = i
         while (start >= 0 && schedule[start][court] == sport) {
             --start
         } ++start // add back to start otherwise time would be 5 minutes late
 
-        // Iterate as far down the schedule as possible that has the same sport
         let end = i
         while (end < TOTAL_INTERVALS && schedule[end][court] == sport) {
             ++end
         }
-
-        // alert(`${index_to_time(start)} - ${index_to_time(end)}: ${sport} on court ${court + 1} in the ${props.gym}`)
 
         props.show_modal(props.gym, court + 1, index_to_time(start), index_to_time(end), sport)
     }
