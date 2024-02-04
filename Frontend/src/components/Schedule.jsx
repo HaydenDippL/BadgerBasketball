@@ -92,7 +92,7 @@ function Schedule(props) {
     let extra_colors = {}
 
     return <div id={`${props.gym}-schedule`} className='border'>
-        <h2>{`${props.gym} Courts`}</h2>
+        <h2>{`${props.gym} Courts ${APPLE}`}</h2>
         <table>
             <thead>
                 <tr>
