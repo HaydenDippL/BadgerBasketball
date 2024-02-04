@@ -118,7 +118,7 @@ function Schedule(props) {
                                         c = (c + 1) % random_colors.length
                                     }
                                     return <td key={String(j) + ',' + String(i)}
-                                        className={is_hour_mark && j === 0 ? 'time' : null}
+                                        className={`${is_hour_mark ? 'hour' : null} ${is_hour_mark && j === 0 ? 'time' : null}`}
                                         onClick={skeleton ? null : () => handleClick(j, i)}
                                         style={{
                                             backgroundColor: color,

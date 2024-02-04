@@ -60,11 +60,11 @@ h2 {
 
 /* We user an after element to display the hour marks instead of a border
 because the grayscale from the focus mode will erase the hour marks */
-tr.hour {
+td.hour {
     position: relative;
 }
 
-tr.hour::after {
+td.hour::after {
     content: "";
     position: absolute;
     left: 0%;
