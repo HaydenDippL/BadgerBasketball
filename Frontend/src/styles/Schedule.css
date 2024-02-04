@@ -16,6 +16,21 @@ tbody.skeleton::before {
     animation: skeleton-loading 0.75s linear infinite alternate;
 }
 
+td.skeleton {
+    position: relative;
+}
+
+td.skeleton::before {
+    content: "";
+    display: block;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    height: 100%;
+    width: 100%;
+    z-index: 1;
+    animation: skeleton-loading 0.75s linear infinite alternate;
+}
 @keyframes skeleton-loading {
     0% {
         background-color: hsl(200, 20%, 70%);
@@ -58,13 +73,20 @@ h2 {
 
 /* Hour Marks */
 
+/* ------------------------ NOTE ------------------------
+iOS has issues with their browsers. They can not properly apply
+before and after elements in tables when those elements are not applied
+to the <td> elements; <table>, <thead>, <tbody>, and <tr> do not work. 
+This means that unfortunately, we must apply larger styles to the basic
+<td> element. .hour should really be applied on <tr>*/
+
 /* We user an after element to display the hour marks instead of a border
 because the grayscale from the focus mode will erase the hour marks */
-td.hour {
+tr.hour {
     position: relative;
 }
 
-td.hour::after {
+tr.hour::after {
     content: "";
     position: absolute;
     left: 0%;
@@ -88,4 +110,23 @@ td.time::before {
     top: -10px;
     pointer-events: none; /* ensures that clicking the times do not give the court one message */
     user-select: text;
+}
+
+/* APPLE EXCEPTIONS */
+
+td.hour {
+    position: relative;
+}
+
+td.hour::after {
+    content: "";
+    position: absolute;
+    left: 0%;
+    top: 0%;
+    width: 100%;
+    height: 2px;
+    background-color: rgba(0, 0, 0, 0.15);
+    pointer-events: none; /* ensures that clicking directly on the line still means that you still get the message */
+    z-index: 2;
+    display: block;
 }

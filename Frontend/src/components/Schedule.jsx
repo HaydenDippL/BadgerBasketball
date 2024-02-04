@@ -9,6 +9,10 @@ const MINUTE_INTERVALS = 5
 const INTERVALS_PER_HOUR = 60 / MINUTE_INTERVALS
 const TOTAL_INTERVALS = (24 - 6) * (INTERVALS_PER_HOUR)
 
+
+
+const APPLE = /iPhone|iPad/i.test(navigator.userAgent)
+
 function Schedule(props) {
     // The schedule state variable is a 2d array that is 216 rows by 8 columns.
     // This represents all the five minute intervals in a 6-midnight day for 8 courts
@@ -104,9 +108,12 @@ function Schedule(props) {
                     schedule.map((row, i) => {
                         let time = index_to_time(i)
                         let is_hour_mark = i % (2 * INTERVALS_PER_HOUR) === 0 && i !== 0
-                        return <tr key={i} id={`${props.gym}-${time}`} className={is_hour_mark ? 'hour' : null}>
+                        return <tr key={i} id={`${props.gym}-${time}`} className={!APPLE && is_hour_mark ? 'hour' : null}>
                             {
                                 row.map((sport, j) => {
+                                    let classes = `${APPLE && is_hour_mark ? 'hour' : null}` +
+                                        `${is_hour_mark && j === 0 ? 'time' : null}` +
+                                        `${APPLE && skeleton ? 'skeleton' : null}`
                                     let color
                                     if (colors[sport]) {
                                         color = colors[sport]
@@ -118,7 +125,7 @@ function Schedule(props) {
                                         c = (c + 1) % random_colors.length
                                     }
                                     return <td key={String(j) + ',' + String(i)}
-                                        className={`${is_hour_mark ? 'hour' : null} ${is_hour_mark && j === 0 ? 'time' : null}`}
+                                        className={classes}
                                         onClick={skeleton ? null : () => handleClick(j, i)}
                                         style={{
                                             backgroundColor: color,
