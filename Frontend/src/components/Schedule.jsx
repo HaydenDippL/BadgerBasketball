@@ -111,9 +111,9 @@ function Schedule(props) {
                         return <tr key={i} id={`${props.gym}-${time}`} className={!APPLE && is_hour_mark ? 'hour' : null}>
                             {
                                 row.map((sport, j) => {
-                                    let classes = `${APPLE && is_hour_mark ? 'hour' : null}` +
-                                        `${is_hour_mark && j === 0 ? 'time' : null}` +
-                                        `${APPLE && skeleton ? 'skeleton' : null}`
+                                    let classes = `${APPLE && is_hour_mark ? 'hour ' : ''}` +
+                                        `${is_hour_mark && j === 0 ? 'time ' : ''}` +
+                                        `${APPLE && skeleton ? 'skeleton' : ''}`
                                     let color
                                     if (colors[sport]) {
                                         color = colors[sport]
