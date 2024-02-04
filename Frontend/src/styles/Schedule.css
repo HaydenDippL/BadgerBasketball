@@ -84,7 +84,7 @@ td.time {
 td.time::before {
     content: attr(time);
     position: absolute;
-    left: -70px;
+    left: -75px;
     top: -10px;
     pointer-events: none; /* ensures that clicking the times do not give the court one message */
     user-select: text;
