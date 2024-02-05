@@ -7,6 +7,8 @@ import Schedule from './components/Schedule'
 
 import './App.css'
 
+const MOBILE_WIDTH = 1000
+
 function App() {
 
     // Gets the US Chicago Central time
@@ -39,6 +41,20 @@ function App() {
         sport: null
     })
 
+    // tracks the window width for conditional rendering of date form
+    const [window_width, set_window_width] = useState(window.innerWidth)
+
+    const handle_resize = () => {
+        set_window_width(window.innerWidth)
+    }
+
+    useEffect(() => {
+        window.addEventListener('resize', handle_resize)
+        return () => {
+            window.removeEventListener('resize', handle_resize)
+        }
+    }, [])
+
     function show_modal(gym, court, start, end, sport) {
         setModal({
             gym: gym,
@@ -56,34 +72,30 @@ function App() {
         const modal = document.querySelector('dialog')
         modal.close()
     }
+
+    let is_mobile = window_width <= 1000
     
-    return <div className='container'>
-        <dialog>
-            <h1>{modal.sport}</h1>
-            <h2>{`${modal.gym}: Court ${modal.court}`}</h2>
-            <h3>{`${modal.start} - ${modal.end}`}</h3>
-            <Button className='modal-button' onClick={hide_modal} variant='danger'>Close</Button>
-        </dialog>
-        <h1>Welcome to UW Open Rec Roster</h1>
-        <p>View the court schedules of the Nick and Bakke. Adjust the date to view the schedule of different days. Select activities you and your friends enjoy to focus only on those activities in the schedule. Click on an activity in the schedule to get more information about that activity.</p>
-        <div className='hbox' id='controls'>
-            <Legend preferences={preferences} setPreferences={setPreferences}/>
-            <DateForm date={date} setDate={setDate}/>
+    return  <>
+        <div className='container'>
+            <dialog>
+                <h1>{modal.sport}</h1>
+                <h2>{`${modal.gym}: Court ${modal.court}`}</h2>
+                <h3>{`${modal.start} - ${modal.end}`}</h3>
+                <Button className='modal-button' onClick={hide_modal} variant='danger'>Close</Button>
+            </dialog>
+            <h1>Welcome to UW Open Rec Roster</h1>
+            <p>View the court schedules of the Nick and Bakke. Adjust the date to view the schedule of different days. Select activities you and your friends enjoy to focus only on those activities in the schedule. Click on an activity in the schedule to get more information about that activity.</p>
+            <div className='hbox' id='controls'>
+                <Legend preferences={preferences} setPreferences={setPreferences}/>
+                {!is_mobile && <DateForm date={date} setDate={setDate} is_mobile={is_mobile}/>}
+            </div>
+            <div className={`${is_mobile ? 'vbox' : 'hbox'}`} style={{marginBottom: is_mobile ? '110px' : null}}>
+                <Schedule show_modal={show_modal} gym={'Bakke'} preferences={preferences} date={date}/>
+                <Schedule show_modal={show_modal} gym={'Nick'} preferences={preferences} date={date}/>
+            </div>
         </div>
-        <Row>
-            {
-                ['Bakke', 'Nick'].map((gym, i) => {
-                    return <Col
-                    md={12}
-                    lg={6}
-                    key={gym}
-                    >
-                        <Schedule show_modal={show_modal} gym={gym} preferences={preferences} date={date}/>
-                    </Col>
-                })
-            }
-        </Row>
-    </div>
+        {is_mobile && <DateForm date={date} setDate={setDate} is_mobile={is_mobile}/>}
+    </>
 }
 
 export default App

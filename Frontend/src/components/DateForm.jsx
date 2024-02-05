@@ -20,12 +20,16 @@ function DateForm(props) {
         props.setDate(tomor)
     }
 
-    return <div className='fixed-hbox'>
+    return <div className={`fixed-hbox ${props.is_mobile ? 'bottom' : ''}`}>
         <Button className='button'
             onClick={yesterday}
-            style={{width: 120}}>{num_to_day[(props.date.getDay() + 6) % 7]}</Button>
-        <div className='text-container'>{pretty_date(props.date)}</div>
-        <Button className='button' onClick={tomorrow} style={{width: 120}}>{num_to_day[(props.date.getDay() + 1) % 7]}</Button>
+            style={{width: 120}}
+        >{num_to_day[(props.date.getDay() + 6) % 7]}</Button>
+        <div className={props.is_mobile ? 'mobile-text-container' : 'text-container'}>{pretty_date(props.date)}</div>
+        <Button className='button'
+            onClick={tomorrow}
+            style={{width: 120, padding: "6px 6px"}}
+        >{num_to_day[(props.date.getDay() + 1) % 7]}</Button>
     </div>
 }
 
