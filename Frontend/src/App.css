@@ -17,11 +17,14 @@
     display: flex;
     align-items: center;
     margin: 20px 20px;
+    gap: 20px;
 }
 
 .vbox {
     display: flex;
     flex-direction: row;
+    margin-top: 20px;
+    gap: 20px;
 }
 
 .modal-button {
