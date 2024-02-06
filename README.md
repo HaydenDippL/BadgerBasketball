@@ -8,7 +8,10 @@ Go Badgers!!
 
 Super excited to annouce that the site is up. To view the website, head to [www.uwopenrecroster.com](https://www.uwopenrecroster.com)!
 
-![Image of the UW Open Rec Roster Website](WebScreenshot.png) 
+<div style='display: flex; gap: 3vw'>
+    <img src='WebScreenshot.png' alt='Image of the UW Open Rec Roster Website on Computer' style='height: 50vh;'/>
+    <img src='MobileWebScreenshot.png' alt='Image of the UW Open Rec Roster Website on Mobile' style='height: 50vh;'/>
+</div>
 
 ## For Developers
 
