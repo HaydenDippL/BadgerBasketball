@@ -71,7 +71,15 @@ CSS files are found in `src/styles` for each component.
 
 No IP can call this backend more the <ins><b>20 times a second</b></ins>!
 
-The Backend is set to memoize the schedules on a daily basis, using `sqlite3` as to not overload the underlying recwell API. 
+The backend memoizes daily schedules from the current day to 2 weeks in the future. Onnce the day ends and a user calls the API the next morning, the backend forgets all of the schedules and starts anew. 
+
+Backend is stored at through nginx ... 
+
+```
+/var/www/ ...
+```
+
+#### API
 
 - Local routes are relative to http://localhost:3999/
 - Backend routes are relative to https://www.uwopenrecrosterbackend.xyz/
