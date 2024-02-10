@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Row, Col, Button } from 'react-bootstrap'
+import { Button } from 'react-bootstrap'
 
 import DateForm from './components/DateForm'
 import Legend from './components/Legend'
