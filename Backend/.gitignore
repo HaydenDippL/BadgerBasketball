@@ -23,6 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-test.js
-test1.json
-test2.json
+test*
+
+sql.insert.js
