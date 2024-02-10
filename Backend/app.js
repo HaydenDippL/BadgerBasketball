@@ -2,7 +2,7 @@ import express from 'express'
 import { DateTime } from 'luxon'
 
 import { CORS_POLICY, LIMITER } from './api-middleware.js'
-import { db_get, db_put, db_wipe } from './sql/sql.js'
+import { db_get, db_put, db_wipe, get_schedule_query_date, put_schedule_query_date } from './sql.js'
 
 const app = express()
 const port = 3999
@@ -23,15 +23,17 @@ app.get('/data', async (req, res) => {
         res.status(400).send('Ensure that the date query is a valid date of the form \'yyyy-mm-dd\' where \'2025-01-01\' represents January 1rst, 2025.\nEnsure the year in the date query is not less than 2024.\nEnsure that the gym query is either \'Bakke\' or \'Nick\'.')
     }
     
-    // Chat GPT Code for time zone handling
-    const providedDate = DateTime.fromObject({ year, month, day, zone: 'America/Chicago' })
-    const oneWeekLater = providedDate.plus({ weeks: 1 })
-    const currentDateTime = DateTime.local().setZone('America/Chicago')
+    const query = DateTime.fromObject({year: year, month: month, day: day}).setZone('America/Chicago')
+    const today = DateTime.local().setZone('America/Chicago').startOf('day')
+    const next_week = today.plus({weeks: 1})
 
-    const within_week = currentDateTime >= providedDate || currentDateTime <= oneWeekLater
+    const within_week = query >= today && query < next_week
     let schedule = null
 
-    if (within_week) {
+    if (today.toISODate() !== get_schedule_query_date()) {
+        put_schedule_query_date(today.toISODate())
+        await db_wipe()
+    } if (within_week) {
         schedule = await JSON.parse(db_get(date, gym, 'Courts'))
     } if (!schedule) {
         schedule = await call_recwell(gym, year, month, day)
@@ -93,7 +95,7 @@ function decodeEntities(encodedString) {
     })
 }
 
-function call_recwell(gym, year, month, day) {
+async function call_recwell(gym, year, month, day) {
     let BuildingId
     let Title
     if (gym === 'Bakke') {
