@@ -1,4 +1,5 @@
 import sqlite3 from 'sqlite3'
+import fs from 'fs'
 
 // Gets from the sqlite DB the entry matching date, gym, and gym_facility
 // will return null if the entry does not exist as a Promise
@@ -38,7 +39,7 @@ export function db_put(date, gym, gym_facility, json_schedule) {
 }
 
 // Returns the contents of the entire table as a Promise
-export function db_all() {
+export async function db_all() {
     return new Promise((resolve, reject) => {
         const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READONLY, (err) => {
             if (err) reject(err)
@@ -57,17 +58,37 @@ export function db_all() {
 }
 
 // Wipe all entries in the table, just keeping the column types intact
-export function db_wipe() {
-    const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READWRITE, (err) => {
-        if (err) reject(err)
-    })
+export async function db_wipe() {
+    return new Promise((resolve, reject) => {
+        const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READWRITE, (err) => {
+            if (err) reject(err)
+        })
 
-    let sql = `DELETE FROM schedules`
-    db.all(sql, (err, rows) => {
-        if (err) reject(err)
-    })
+        let sql = `DELETE FROM schedules`
+        db.all(sql, (err, rows) => {
+            if (err) {
+                reject(err)
+                return
+            }
+        })
 
-    db.close((err) => {
-        if (err) reject(err)
+        db.close((err) => {
+            if (err) reject(err)
+            else resolve()
+        })
+    })
+}
+
+export function get_schedule_query_date() {
+    try {
+        return fs.readFileSync('date.txt', 'utf8')
+    } catch (error) {
+        return console.error(error.message)
+    }
+}
+
+export async function put_schedule_query_date(date) {
+    fs.writeFile('date.txt', date, (err) => {
+        if (err) console.error(err.message)
     })
 }
