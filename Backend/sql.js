@@ -4,6 +4,7 @@ import fs from 'fs'
 // Gets from the sqlite DB the entry matching date, gym, and gym_facility
 // will return null if the entry does not exist as a Promise
 export async function db_get(date, gym, gym_facility) {
+    console.log(`db_get(date=${date} gym=${gym}, gym_facility=${gym_facility})`)
     return new Promise((resolve, reject) => {
         const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READONLY, (err) => {
             if (err) reject(err)
@@ -12,8 +13,11 @@ export async function db_get(date, gym, gym_facility) {
         let sql = `SELECT json_schedule FROM schedules WHERE date_queried = ? and gym = ? and gym_facility = ?`
         db.all(sql, [date, gym, gym_facility], (err, rows) => {
             if (err) reject(err)
-            else if (rows && rows.length > 0) resolve(rows[0].json_schedule)
-            else resolve(null)
+            else if (rows && rows.length > 0) {
+                resolve(rows[0].json_schedule)
+            } else {
+                resolve(null)
+            }
         })
 
         db.close((err) => {
@@ -23,23 +27,28 @@ export async function db_get(date, gym, gym_facility) {
 }
 
 // Inserts to the sqlite DB the entry containing date, gym, gym_facility, and json_schedule
-export function db_put(date, gym, gym_facility, json_schedule) {
-    const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READWRITE, (err) => {
-        if (err) return console.error(err.messge)
-    })
+export async function db_put(date, gym, gym_facility, json_schedule) {
+    console.log(`db_put(date=${date}, gym=${gym}, gym_facility=${gym_facility}, json_schedule=...)`)
+    return new Promise((resolve, reject) => {
+        const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READWRITE, (err) => {
+            if (err) return console.error(err.messge)
+        })
 
-    let sql = `INSERT INTO schedules (date_queried, gym, gym_facility, json_schedule) VALUES ( ?, ?, ?, ? )`
-    db.all(sql, [date, gym, gym_facility, json_schedule], (err, row) => {
-        if (err) return console.error(err.message)
-    })
-
-    db.close((err) => {
-        if (err) return console.error(err.message)
-    })
+        let sql = `INSERT INTO schedules (date_queried, gym, gym_facility, json_schedule) VALUES ( ?, ?, ?, ? )`
+        db.all(sql, [date, gym, gym_facility, json_schedule], (err, row) => {
+            if (err) return console.error(err.message)
+            resolve()
+        })
+    
+        db.close((err) => {
+            if (err) return console.error(err.message)
+        })
+    })    
 }
 
 // Returns the contents of the entire table as a Promise
 export async function db_all() {
+    console.log(`db_all()`)
     return new Promise((resolve, reject) => {
         const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READONLY, (err) => {
             if (err) reject(err)
@@ -59,6 +68,7 @@ export async function db_all() {
 
 // Wipe all entries in the table, just keeping the column types intact
 export async function db_wipe() {
+    console.log(`db_wipe()`)
     return new Promise((resolve, reject) => {
         const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READWRITE, (err) => {
             if (err) reject(err)
@@ -66,10 +76,7 @@ export async function db_wipe() {
 
         let sql = `DELETE FROM schedules`
         db.all(sql, (err, rows) => {
-            if (err) {
-                reject(err)
-                return
-            }
+            if (err) reject(err)
         })
 
         db.close((err) => {
@@ -80,14 +87,17 @@ export async function db_wipe() {
 }
 
 export function get_schedule_query_date() {
+    console.log(`get_schedule_query_date()`)
     try {
-        return fs.readFileSync('date.txt', 'utf8')
+        const date = fs.readFileSync('date.txt', 'utf8')
+        return date
     } catch (error) {
         return console.error(error.message)
     }
 }
 
 export async function put_schedule_query_date(date) {
+    console.log(`put_schedule_query_date(date=${date})`)
     fs.writeFile('date.txt', date, (err) => {
         if (err) console.error(err.message)
     })

@@ -25,7 +25,7 @@ app.get('/data', async (req, res) => {
     
     const query = DateTime.fromObject({year: year, month: month, day: day}).setZone('America/Chicago')
     const today = DateTime.local().setZone('America/Chicago').startOf('day')
-    const next_week = today.plus({weeks: 1})
+    const next_week = today.plus({weeks: 2})
 
     const within_week = query >= today && query < next_week
     let schedule = null
@@ -34,10 +34,13 @@ app.get('/data', async (req, res) => {
         put_schedule_query_date(today.toISODate())
         await db_wipe()
     } if (within_week) {
-        schedule = await JSON.parse(db_get(date, gym, 'Courts'))
+        const schedule_json = await db_get(date, gym, 'Courts')
+        schedule = schedule_json ? JSON.parse(schedule_json) : null
     } if (!schedule) {
         schedule = await call_recwell(gym, year, month, day)
-        if (within_week) db_put(date, gym, 'Court', JSON.stringify(schedule))
+        if (within_week) {
+            db_put(date, gym, 'Courts', JSON.stringify(schedule))
+        }
     }
 
     res.status(200).send(schedule)
@@ -96,6 +99,8 @@ function decodeEntities(encodedString) {
 }
 
 async function call_recwell(gym, year, month, day) {
+    console.log(`call_recwell(gym=${gym}, date=${year})`)
+
     let BuildingId
     let Title
     if (gym === 'Bakke') {
