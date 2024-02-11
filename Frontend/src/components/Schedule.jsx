@@ -56,9 +56,12 @@ function Schedule(props) {
         const params = new URLSearchParams()
         params.append('date', props.date.toISODate())
         params.append('gym', props.gym)
+        params.append('gym_facility', 'Courts')
         params.append('session_id', props.user_data.session_id)
         params.append('device', props.user_data.device)
         params.append('browser', props.user_data.browser)
+
+        // console.log('http://localhost:3999/data?' + params)
 
         fetch('https://www.uwopenrecrosterbackend.xyz/data?' + params, { signal })
         // fetch('http://localhost:3999/data?' + params, { signal }) // used for local testing
