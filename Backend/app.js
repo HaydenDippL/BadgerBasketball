@@ -2,7 +2,7 @@ import express from 'express'
 import { DateTime } from 'luxon'
 
 import { CORS_POLICY, LIMITER } from './api-middleware.js'
-import { db_get, db_put, db_wipe, get_schedule_query_date, put_schedule_query_date } from './sql.js'
+import { db_get, db_put, db_wipe, get_schedule_query_date, logging, put_schedule_query_date } from './sql.js'
 
 const app = express()
 const port = 3999
@@ -17,31 +17,42 @@ app.listen(port, () => {
 app.get('/data', async (req, res) => {
     const date = req.query.date
     const gym = req.query.gym
+    const gym_facility = req.query.gym_facility
+    const session_id = req.query.session_id
+    const device = req.query.device
+    const browser = req.query.browser
+    const IP = req.ip
+
     const [year, month, day] = date.split('-').map(Number)
     
     if (!valid_input(year, month, day, gym)) {
         res.status(400).send('Ensure that the date query is a valid date of the form \'yyyy-mm-dd\' where \'2025-01-01\' represents January 1rst, 2025.\nEnsure the year in the date query is not less than 2024.\nEnsure that the gym query is either \'Bakke\' or \'Nick\'.')
     }
     
-    const query = DateTime.fromObject({year: year, month: month, day: day}).setZone('America/Chicago')
-    const today = DateTime.local().setZone('America/Chicago').startOf('day')
+    const query = DateTime.fromISO(date).setZone('America/Chicago')
+    const now = DateTime.now().setZone('America/Chicago')
+    const today_string = now.toISODate() + 'T' + now.toISOTime()
+    const today = now.startOf('day')
     const next_week = today.plus({weeks: 2})
+
 
     const within_week = query >= today && query < next_week
     let schedule = null
 
     if (today.toISODate() !== get_schedule_query_date()) {
         put_schedule_query_date(today.toISODate())
-        await db_wipe()
+        await db_wipe('schedules')
     } if (within_week) {
-        const schedule_json = await db_get(date, gym, 'Courts')
+        const schedule_json = await db_get(date, gym, gym_facility)
         schedule = schedule_json ? JSON.parse(schedule_json) : null
     } if (!schedule) {
         schedule = await call_recwell(gym, year, month, day)
         if (within_week) {
-            db_put(date, gym, 'Courts', JSON.stringify(schedule))
+            db_put(date, gym, gym_facility, JSON.stringify(schedule))
         }
     }
+
+    logging(query.toISODate(), gym, gym_facility, session_id, IP, today_string, device, browser)
 
     res.status(200).send(schedule)
 })
