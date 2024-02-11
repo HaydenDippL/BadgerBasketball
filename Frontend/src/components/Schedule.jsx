@@ -34,16 +34,34 @@ function Schedule(props) {
         // There was an issue where before if you double clicked you would have to load the first schedule and display it before viewing the second schedule.
         const abortController = new AbortController()
         const signal = abortController.signal
-    
-        const year = props.date.getFullYear()
-        const month = props.date.getMonth() + 1 // month is 0-indexed, add one to make 1-indexed
-        const day = props.date.getDate()
 
         // Initiate the skeleton load animation
         set_skeleton(true)
 
-        fetch(`https://www.uwopenrecrosterbackend.xyz/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal })
-        // fetch(`http://localhost:3999/data?date=${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}&gym=${props.gym}`, { signal }) // used for local testing
+        const options = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application.json'
+            },
+            body: JSON.stringify({
+                date: props.date.toISODate(),
+                gym: props.gym,
+                session_id: props.user_data.session_id,
+                device: props.user_data.device,
+                browser: props.user_data.browser
+            }),
+            signal: signal
+        }
+
+        const params = new URLSearchParams()
+        params.append('date', props.date.toISODate())
+        params.append('gym', props.gym)
+        params.append('session_id', props.user_data.session_id)
+        params.append('device', props.user_data.device)
+        params.append('browser', props.user_data.browser)
+
+        // fetch('https://www.uwopenrecrosterbackend.xyz/data?' + params, { signal })
+        fetch('http://localhost:3999/data?' + params, { signal }) // used for local testing
             .then(res => res.json())
             .then(data => {
                 // if this is the current schedule, display it

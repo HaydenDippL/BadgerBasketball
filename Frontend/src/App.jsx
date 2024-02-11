@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Button } from 'react-bootstrap'
 
+import { uuid4 } from 'uuid4'
+import { DateTime } from 'luxon'
+
 import DateForm from './components/DateForm'
 import Legend from './components/Legend'
 import Schedule from './components/Schedule'
@@ -11,17 +14,15 @@ const MOBILE_WIDTH = 1000
 
 function App() {
 
-    // Gets the US Chicago Central time
-    function get_central_time() {
-        const current_date = new Date()
-        return new Date(current_date.toLocaleString('en-US', {
-            timeZone: 'America/Chicago'
-        }))
-    }
-
     // The date state variable represents the date of the schedules
     // according to the US Chicago Central time
-    const [date, setDate] = useState(get_central_time())
+    const [date, setDate] = useState(DateTime.local().setZone('America/Chicago'))
+
+    const [user_data, set_user_data] = useState({
+        session_id: uuid4(),
+        device: platform.os.family,
+        browser: platform.name,
+    })
 
     // The preferences state variable represents the different buttons
     // the user can press to focus on just that sport, or many sport
@@ -44,17 +45,6 @@ function App() {
     // tracks the window width for conditional rendering of date form
     const [window_width, set_window_width] = useState(window.innerWidth)
 
-    const handle_resize = () => {
-        set_window_width(window.innerWidth)
-    }
-
-    useEffect(() => {
-        window.addEventListener('resize', handle_resize)
-        return () => {
-            window.removeEventListener('resize', handle_resize)
-        }
-    }, [])
-
     function show_modal(gym, court, start, end, sport) {
         setModal({
             gym: gym,
@@ -73,7 +63,7 @@ function App() {
         modal.close()
     }
 
-    let is_mobile = window_width <= 1000
+    let is_mobile = window_width <= MOBILE_WIDTH
     
     return  <>
         <div className='container'>
@@ -90,8 +80,8 @@ function App() {
                 {!is_mobile && <DateForm date={date} setDate={setDate} is_mobile={is_mobile}/>}
             </div>
             <div className={`${is_mobile ? 'vbox' : 'hbox'}`} style={{marginBottom: is_mobile ? '117px' : null}}>
-                <Schedule show_modal={show_modal} gym={'Bakke'} preferences={preferences} date={date}/>
-                <Schedule show_modal={show_modal} gym={'Nick'} preferences={preferences} date={date}/>
+                <Schedule show_modal={show_modal} gym={'Bakke'} preferences={preferences} date={date} user_data={user_data}/>
+                <Schedule show_modal={show_modal} gym={'Nick'} preferences={preferences} date={date} user_data={user_data}/>
             </div>
         </div>
         {is_mobile && <DateForm date={date} setDate={setDate} is_mobile={is_mobile}/>}
