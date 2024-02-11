@@ -25,4 +25,6 @@ dist-ssr
 
 test*
 
-sql.insert.js
+sql.all.js
+sql.wipe.js
+sql.readwrite.js
