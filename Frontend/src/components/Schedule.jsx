@@ -60,8 +60,8 @@ function Schedule(props) {
         params.append('device', props.user_data.device)
         params.append('browser', props.user_data.browser)
 
-        // fetch('https://www.uwopenrecrosterbackend.xyz/data?' + params, { signal })
-        fetch('http://localhost:3999/data?' + params, { signal }) // used for local testing
+        fetch('https://www.uwopenrecrosterbackend.xyz/data?' + params, { signal })
+        // fetch('http://localhost:3999/data?' + params, { signal }) // used for local testing
             .then(res => res.json())
             .then(data => {
                 // if this is the current schedule, display it
