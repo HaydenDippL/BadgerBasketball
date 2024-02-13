@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <style>
+        .container {
+            width: 250px;
+            height: 200px;
+            justify-content: space-around;
+            border: 2px solid rgb(93, 206, 229);
+        }
+
+        .bar {
+            fill: rgb(93, 206, 229);
+        }
+
+        rect {
+            pointer-events: all;
+            fill-opacity: 0;
+            stroke-opacity: 0;
+            z-index: 1;
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 10px;
+            background-color: steelblue;
+            color: white;
+            border: 1px solid white;
+            border-radius: 10px;
+            display: none;
+            opacity: .75;
+        }
+    </style>
+    <title>D3.js Tutorial</title>
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+    <svg id="bar-chart"></svg>
+    <div id="line-plot"></div>
+    <script src="analytics.js"></script>
+</body>
+</html>
