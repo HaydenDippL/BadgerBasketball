@@ -2,10 +2,13 @@ import express from 'express'
 import { DateTime } from 'luxon'
 
 import { CORS_POLICY, LIMITER } from './api-middleware.js'
-import { db_get, db_put, db_wipe, get_schedule_query_date, logging, put_schedule_query_date } from './sql.js'
+import { get_schedule, put_schedule, schedules_forget, get_schedule_query_date, put_schedule_query_date } from './schedule-memo.js'
+import { logging } from './logging.js'
 
 const app = express()
 const port = 3999
+
+// app.set('trust proxy', true)
 
 app.use(CORS_POLICY)
 app.use(LIMITER)
@@ -35,20 +38,19 @@ app.get('/data', async (req, res) => {
     const today = now.startOf('day')
     const next_week = today.plus({weeks: 2})
 
-
     const within_week = query >= today && query < next_week
     let schedule = null
 
     if (today.toISODate() !== get_schedule_query_date()) {
         put_schedule_query_date(today.toISODate())
-        await db_wipe('schedules')
+        await schedules_forget('schedules')
     } if (within_week) {
-        const schedule_json = await db_get(date, gym, gym_facility)
+        const schedule_json = await get_schedule(date, gym, gym_facility)
         schedule = schedule_json ? JSON.parse(schedule_json) : null
     } if (!schedule) {
         schedule = await call_recwell(gym, year, month, day)
         if (within_week) {
-            db_put(date, gym, gym_facility, JSON.stringify(schedule))
+            put_schedule(date, gym, gym_facility, JSON.stringify(schedule))
         }
     }
 
