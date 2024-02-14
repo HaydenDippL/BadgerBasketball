@@ -1,7 +1,7 @@
 import sqlite3 from 'sqlite3'
 import fs from 'fs'
 
-const db_path = './db.db'
+const db_path = './schedules.db'
 const date_path = 'date.txt'
 
 // Gets from the sqlite DB the entry matching date, gym, and gym_facility
@@ -73,7 +73,7 @@ export async function db_all(table) {
 export async function schedules_forget(table) {
     console.log(`db_wipe()`)
     return new Promise((resolve, reject) => {
-        const db = new sqlite3.Database('./schedules.db', sqlite3.OPEN_READWRITE, (err) => {
+        const db = new sqlite3.Database(db_path, sqlite3.OPEN_READWRITE, (err) => {
             if (err) reject(err)
         })
 

@@ -19,8 +19,8 @@ const pool = createPool({
 export async function logging(date_queried, gym, gym_facility, session_id, IP, date_of_query, device, browser) {
     return new Promise(async (resolve, reject) => {
         try {
-            await insert_queries(date_queried, gym, gym_facility, session_id)
             await insert_sessions(session_id, IP, date_of_query, device, browser)
+            await insert_queries(date_queried, gym, gym_facility, session_id)
             await update_sessions(session_id)
             resolve()
         } catch (error) {
