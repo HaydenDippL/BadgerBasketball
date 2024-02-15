@@ -34,7 +34,7 @@ app.get('/data', async (req, res) => {
     
     const query = DateTime.fromISO(date).setZone('America/Chicago')
     const now = DateTime.now().setZone('America/Chicago')
-    const today_string = now.toISODate() + 'T' + now.toISOTime()
+    const today_string = now.toISODate() + ' ' + now.toISOTime().substring(0, 8)
     const today = now.startOf('day')
     const next_week = today.plus({weeks: 2})
 
@@ -64,7 +64,8 @@ app.get('/analytics', async (req, res) => {
     const get_total_visits = req.get_total_users || false
     const get_total_queries = req.get_total_queries || false
     const get_users_over_time = req.get_users_over_time || false
-    const get_days_count_with_time = req.get_days_count_with_time || false
+    const get_days_activity_count = req.get_days_activity_count || false
+    const get_days_viewed_count = req.get_days_viewed_count || false
     const get_future_views = req.get_future_views || false
     const get_device_counts = req.get_device_counts || false
     const get_browser_counts = req.get_device_counts || false
@@ -74,7 +75,7 @@ app.get('/analytics', async (req, res) => {
     // lifetime users
     if (get_total_users) {
         const get_total_users_sql = 'SELECT COUNT(DISTINCT IP) as total_users FROM sessions;'
-        analytics.total_users = (await query(get_total_users_sql, [])).total_users
+        analytics.total_users = (await query(get_total_users_sql, []))[0].total_users
     }
 
     // lifetime site visits
@@ -91,37 +92,42 @@ app.get('/analytics', async (req, res) => {
 
     // total users over time
     if (get_users_over_time) {
-
+        const get_users_over_time_sql = 'SELECT date_of_queries, SUM(num_queries) OVER (ORDER BY date_of_queries) AS users_over_time FROM sessions;'
+        analytics.users_over_time = JSON.parse(JSON.stringify(await query(get_users_over_time_sql, [])))
     }
 
     // Get bar chart data for when we get queries each day of week
-    if (get_days_count_with_time) {
+    if (get_days_activity_count) {
+
+    }
+
+    if (get_days_viewed_count) {
 
     }
 
     // Get bar chart data for how far in the future each user queries
     if (get_future_views) {
-
+        const get_future_views_sql = `SELECT
+                DATEDIFF(queries.date_queried, sessions.date_of_queries) AS days_difference,
+                COUNT(*) AS count
+            FROM queries
+            JOIN sessions ON queries.session_id = sessions.session_id
+            GROUP BY days_difference
+            ORDER BY days_difference;
+        `
+        analytics.future_views = JSON.parse(JSON.stringify(await query(get_future_views_sql, [])))
     }
 
     // Donut Diagram for devices
-    // TODO CAN OPTIMIZE ---- SINGLE SQL
     if (get_device_counts) {
-        const get_device_sql = 'SELECT device, num_queries FROM sessions'
-        analytics.device_counts = (await query(get_device_sql, [])).reduce((acc, {device, num_queries}) => {
-            acc[device] = (acc[device] || 0) + num_queries
-            return acc
-        })
+        const get_device_sql = 'SELECT device, SUM(num_queries) AS total_device_queries FROM sessions GROUP BY device;'
+        analytics.device_counts = JSON.parse(JSON.stringify(await query(get_device_sql, [])))
     }
     
     // Donut Diagram for browsers
-    // TODO CAN OPTIMIZE ---- SINGLE SQL
     if (get_browser_counts) {
-        const get_browser_sql = 'SELECT browser, num_queries FROM sessions'
-        analytics.browser_counts = (await query(get_browser_sql, [])).reduce((acc, {browser, num_queries}) => {
-            acc[device] = (acc[device] || 0) + num_queries
-            return acc
-        })
+        const get_browser_sql = 'SELECT browser, SUM(num_queries) AS total_browser_queries FROM sessions GROUP BY browser;'
+        analytics.browser_counts = JSON.parse(JSON.stringify(await query(get_browser_sql, [])))
     }
 })
 

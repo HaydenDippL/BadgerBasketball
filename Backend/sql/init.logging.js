@@ -38,15 +38,4 @@ async function generate_tables(conn) {
     }
 }
 
-async function query(sql, values) {
-    const connection = await pool.getConnection();
-    try {
-        const [rows, fields] = await connection.execute(sql, values);
-        return rows;
-    } finally {
-        connection.release();
-    }
-}
-// Check CHATGPT Connection TIMEOUT
-
 generate_tables(conn)

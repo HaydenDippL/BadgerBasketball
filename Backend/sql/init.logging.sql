@@ -2,7 +2,7 @@ CREATE TABLE sessions(
     session_id VARCHAR(36) PRIMARY KEY,
     IP TEXT,
     num_queries INT,
-    date_of_queries DATE,
+    date_of_queries DATETIME,
     device VARCHAR(40),
     browser VARCHAR(40)
 );
