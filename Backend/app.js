@@ -3,7 +3,7 @@ import { DateTime } from 'luxon'
 
 import { CORS_POLICY, LIMITER } from './api-middleware.js'
 import { get_schedule, put_schedule, schedules_forget, get_schedule_query_date, put_schedule_query_date } from './schedule-memo.js'
-import { logging } from './logging.js'
+import { logging, get_queries, get_sessions, query } from './logging.js'
 
 const app = express()
 const port = 3999
@@ -57,6 +57,72 @@ app.get('/data', async (req, res) => {
     logging(query.toISODate(), gym, gym_facility, session_id, IP, today_string, device, browser)
 
     res.status(200).send(schedule)
+})
+
+app.get('/analytics', async (req, res) => {
+    const get_total_users = req.get_total_users || false
+    const get_total_visits = req.get_total_users || false
+    const get_total_queries = req.get_total_queries || false
+    const get_users_over_time = req.get_users_over_time || false
+    const get_days_count_with_time = req.get_days_count_with_time || false
+    const get_future_views = req.get_future_views || false
+    const get_device_counts = req.get_device_counts || false
+    const get_browser_counts = req.get_device_counts || false
+
+    const analytics = {}
+
+    // lifetime users
+    if (get_total_users) {
+        const get_total_users_sql = 'SELECT COUNT(DISTINCT IP) as total_users FROM sessions;'
+        analytics.total_users = (await query(get_total_users_sql, [])).total_users
+    }
+
+    // lifetime site visits
+    if (get_total_visits) {
+        const get_total_visits_sql = 'SELECT COUNT(*) as total_visits FROM sessions;'
+        analytics.total_visits = (await query(get_total_visits_sql, [])).total_visits
+    }
+
+    // lifetime queries
+    if (get_total_queries) {
+        const get_total_queries_sql = 'SELECT SUM(num_queries) as total_queries FROM sessions;'
+        analytics.total_queries = (await query(get_total_queries_sql, [])).total_queries
+    }
+
+    // total users over time
+    if (get_users_over_time) {
+
+    }
+
+    // Get bar chart data for when we get queries each day of week
+    if (get_days_count_with_time) {
+
+    }
+
+    // Get bar chart data for how far in the future each user queries
+    if (get_future_views) {
+
+    }
+
+    // Donut Diagram for devices
+    // TODO CAN OPTIMIZE ---- SINGLE SQL
+    if (get_device_counts) {
+        const get_device_sql = 'SELECT device, num_queries FROM sessions'
+        analytics.device_counts = (await query(get_device_sql, [])).reduce((acc, {device, num_queries}) => {
+            acc[device] = (acc[device] || 0) + num_queries
+            return acc
+        })
+    }
+    
+    // Donut Diagram for browsers
+    // TODO CAN OPTIMIZE ---- SINGLE SQL
+    if (get_browser_counts) {
+        const get_browser_sql = 'SELECT browser, num_queries FROM sessions'
+        analytics.browser_counts = (await query(get_browser_sql, [])).reduce((acc, {browser, num_queries}) => {
+            acc[device] = (acc[device] || 0) + num_queries
+            return acc
+        })
+    }
 })
 
 function filter_schedule(data, year, month, day) {
