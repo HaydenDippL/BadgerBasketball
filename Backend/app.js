@@ -8,7 +8,7 @@ import { logging, query } from './logging.js'
 const app = express()
 const port = 3999
 
-// app.set('trust proxy', true)
+app.set('trust proxy', true)
 
 app.use(CORS_POLICY)
 app.use(LIMITER)
@@ -54,7 +54,7 @@ app.get('/data', async (req, res) => {
         }
     }
 
-    logging(query.toISODate(), gym, gym_facility, session_id, IP, today_string, device, browser)
+    logging(query.toISODate(), gym, gym_facility, session_id, IP, now.toISODate(), now.toISOTime().substring(0, 8), device, browser)
 
     res.status(200).send(schedule)
 })
