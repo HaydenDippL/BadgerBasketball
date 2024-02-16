@@ -36,7 +36,7 @@ export async function query(query, values) {
     })
 }
 
-export async function logging(date_queried, gym, gym_facility, session_id, IP, date_of_query, device, browser) {
+export async function logging(date_queried, gym, gym_facility, session_id, IP, date_of_query, time_of_query, device, browser) {
     const session_exists_sql = 'SELECT COUNT(*) AS count FROM sessions WHERE session_id = ?'
     const session_exists = (await query(session_exists_sql, [session_id]))[0].count > 0
     console.log("Session exists:",session_exists)
@@ -45,9 +45,10 @@ export async function logging(date_queried, gym, gym_facility, session_id, IP, d
         const update_sessions_sql = 'UPDATE sessions SET num_queries = num_queries + 1 WHERE session_id = ?'
         await query(update_sessions_sql, [session_id])
     } else {
-        const insert_sessions_sql = 'INSERT INTO sessions (session_id, IP, num_queries, date_of_queries, device, browser) VALUES (?, ?, 1, ?, ?, ?)'
-        await query(insert_sessions_sql, [session_id, IP, date_of_query, device, browser])
+        const insert_sessions_sql = 'INSERT INTO sessions (session_id, IP, num_queries, date_of_queries, time_of_queries, device, browser) VALUES (?, ?, 1, ?, ?, ?, ?)'
+        await query(insert_sessions_sql, [session_id, IP, date_of_query, time_of_query, device, browser])
     }
+
     const insert_queries_sql = 'INSERT INTO queries (date_queried, gym, gym_facility, session_id) VALUES (?, ?, ?, ?);'
     await query(insert_queries_sql, [date_queried, gym, gym_facility, session_id])
 }
