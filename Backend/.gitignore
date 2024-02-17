@@ -28,3 +28,6 @@ sql.wipe.js
 sql.readwrite.js
 
 .env
+test.js
+date.txt
+schedules.db

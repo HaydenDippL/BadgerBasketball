@@ -19,6 +19,7 @@ const pool = createPool({
     queueLimit: 20
 })
 
+// async function that allows you call vall the logging DB
 export async function query(query, values) {
     return new Promise((resolve, reject) => {
         pool.getConnection((err, connection) => {
@@ -36,6 +37,7 @@ export async function query(query, values) {
     })
 }
 
+// logs user data and visits
 export async function logging(date_queried, gym, gym_facility, session_id, IP, date_of_query, time_of_query, device, browser) {
     const session_exists_sql = 'SELECT COUNT(*) AS count FROM sessions WHERE session_id = ?'
     const session_exists = (await query(session_exists_sql, [session_id]))[0].count > 0
@@ -53,11 +55,13 @@ export async function logging(date_queried, gym, gym_facility, session_id, IP, d
     await query(insert_queries_sql, [date_queried, gym, gym_facility, session_id])
 }
 
+// displays the whoel query table
 export async function get_queries() {
     const get_queries_sql = `SELECT * FROM queries`
     return await query(get_queries_sql, [])
 }
 
+// displays the whole sessions table
 export async function get_sessions() {
     const get_sessions_sql = `SELECT * FROM sessions`
     return await query(get_sessions_sql, [])

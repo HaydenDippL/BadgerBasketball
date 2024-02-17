@@ -61,14 +61,14 @@ app.get('/data', async (req, res) => {
 
 app.get('/analytics', async (req, res) => {
     const get_total_users = req.get_total_users || false
-    const get_total_visits = req.get_total_users || false
+    const get_total_visits = req.get_total_visits || false
     const get_total_queries = req.get_total_queries || false
     const get_users_over_time = req.get_users_over_time || false
     const get_days_activity_count = req.get_days_activity_count || false
     const get_days_viewed_count = req.get_days_viewed_count || false
     const get_future_views = req.get_future_views || false
     const get_device_counts = req.get_device_counts || false
-    const get_browser_counts = req.get_device_counts || false
+    const get_browser_counts = req.get_browser_counts || false
 
     
     // lifetime users
@@ -136,6 +136,7 @@ app.get('/analytics', async (req, res) => {
     res.status(200).send(analytics)
 })
 
+// filters the schedules to only get court events on the given date
 function filter_schedule(data, year, month, day) {
     const events = JSON.parse(data['d'])['DailyBookingResults']
     const date = String(year) + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0')
@@ -154,6 +155,7 @@ function filter_schedule(data, year, month, day) {
     return schedule
 }
 
+// checks to see if the call is valid
 function valid_input(year, month, day, gym) {
     try {
         const d = new Date(year, month - 1, day)
@@ -170,6 +172,7 @@ function valid_input(year, month, day, gym) {
 }
 
 // https://stackoverflow.com/questions/44195322/a-plain-javascript-way-to-decode-html-entities-works-on-both-browsers-and-node
+// Sometimes characters from the recwell api come out as weird encodings, this decodes them
 function decodeEntities(encodedString) {
     var translate_re = /&(nbsp|amp|quot|lt|gt|&#39;);/g
     var translate = {
@@ -188,6 +191,7 @@ function decodeEntities(encodedString) {
     })
 }
 
+// class the recwell API for the gym and date
 async function call_recwell(gym, year, month, day) {
     console.log(`call_recwell(gym=${gym}, date=${year})`)
 

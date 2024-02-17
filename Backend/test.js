@@ -12,8 +12,8 @@ import { DateTime } from 'luxon'
 // console.log(sessions)
 
 
-await query('DELETE FROM queries;', [])
-await query('DELETE FROM sessions;', [])
+// await query('DELETE FROM queries;', [])
+// await query('DELETE FROM sessions;', [])
 console.log(await get_queries())
 console.log(await get_sessions())
 

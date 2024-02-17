@@ -89,6 +89,7 @@ export async function schedules_forget(table) {
     })
 }
 
+// gets the current date the schedules were saved under
 export function get_schedule_query_date() {
     console.log(`get_schedule_query_date()`)
     try {
@@ -99,6 +100,7 @@ export function get_schedule_query_date() {
     }
 }
 
+// puts a new date as the date to save schedules under
 export async function put_schedule_query_date(date) {
     console.log(`put_schedule_query_date(date=${date})`)
     fs.writeFile(date_path, date, (err) => {
