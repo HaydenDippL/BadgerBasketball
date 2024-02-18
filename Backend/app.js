@@ -60,16 +60,19 @@ app.get('/data', async (req, res) => {
 })
 
 app.get('/analytics', async (req, res) => {
-    const get_total_users = req.get_total_users || false
-    const get_total_visits = req.get_total_visits || false
-    const get_total_queries = req.get_total_queries || false
-    const get_users_over_time = req.get_users_over_time || false
-    const get_days_activity_count = req.get_days_activity_count || false
-    const get_days_viewed_count = req.get_days_viewed_count || false
-    const get_future_views = req.get_future_views || false
-    const get_device_counts = req.get_device_counts || false
-    const get_browser_counts = req.get_browser_counts || false
+    const get_total_users = req.query.get_total_users || false
+    const get_total_visits = req.query.get_total_visits || false
+    const get_total_queries = req.query.get_total_queries || false
+    const get_users_over_time = req.query.get_users_over_time || false
+    const get_days_activity_count = req.query.get_days_activity_count || false
+    const get_days_viewed_count = req.query.get_days_viewed_count || false
+    const get_future_views = req.query.get_future_views || false
+    const get_device_counts = req.query.get_device_counts || false
+    const get_browser_counts = req.query.get_browser_counts || false
 
+    console.log(Object.keys(req))
+
+    const analytics = {}
     
     // lifetime users
     if (get_total_users) {
