@@ -34,7 +34,6 @@ app.get('/data', async (req, res) => {
     
     const query = DateTime.fromISO(date).setZone('America/Chicago')
     const now = DateTime.now().setZone('America/Chicago')
-    const today_string = now.toISODate() + ' ' + now.toISOTime().substring(0, 8)
     const today = now.startOf('day')
     const next_week = today.plus({weeks: 2})
 
@@ -64,6 +63,7 @@ app.get('/analytics', async (req, res) => {
     const get_total_visits = req.query.get_total_visits || false
     const get_total_queries = req.query.get_total_queries || false
     const get_users_over_time = req.query.get_users_over_time || false
+    const get_daily_users = req.query.get_daily_users || false
     const get_days_activity_count = req.query.get_days_activity_count || false
     const get_days_viewed_count = req.query.get_days_viewed_count || false
     const get_future_views = req.query.get_future_views || false
@@ -97,6 +97,12 @@ app.get('/analytics', async (req, res) => {
         // const get_users_over_time_sql = `SELECT date_of_queries, SUM(num_queries) OVER (ORDER BY date_of_queries) AS users_over_time FROM sessions;`
         const get_users_over_time_sql = `SELECT date_of_queries, COUNT(DISTINCT IP) AS num_users FROM sessions GROUP BY date_of_queries ORDER BY date_of_queries;`
         analytics.users_over_time = JSON.parse(JSON.stringify(await query(get_users_over_time_sql, [])))
+    }
+
+    // daily users
+    if (get_daily_users) {
+        const get_daily_users_sql = `SELECT date_of_queries, COUNT(*) AS daily_users FROM sessions GROUP BY date_of_queries`
+        analytics.daily_users = JSON.parse(JSON.stringify(await query(get_daily_users_sql, [])))
     }
 
     // Get bar chart data for when we get queries each day of week

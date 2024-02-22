@@ -1,45 +1,75 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <title>Analytics</title>
     <style>
-        .container {
-            width: 250px;
-            height: 200px;
-            justify-content: space-around;
-            border: 2px solid rgb(93, 206, 229);
-        }
+    .listening-rect {
+        pointer-events: all;
+        fill-opacity: 0;
+        stroke-opacity: 0;
+        z-index: 1;
+    }
 
-        .bar {
-            fill: rgb(93, 206, 229);
-        }
+    .tooltip {
+        position: absolute;
+        padding: 10px;
+        background-color: steelblue;
+        color: white;
+        border: 1px solid white;
+        border-radius: 10px;
+        display: none;
+        opacity: .75;
+        pointer-events: none;
+    }
 
-        rect {
-            pointer-events: all;
-            fill-opacity: 0;
-            stroke-opacity: 0;
-            z-index: 1;
-        }
+    .hbox {
+        display: flex
+    }
 
-        .tooltip {
-            position: absolute;
-            padding: 10px;
-            background-color: steelblue;
-            color: white;
-            border: 1px solid white;
-            border-radius: 10px;
-            display: none;
-            opacity: .75;
-        }
+    .stat-header {
+        font-size: 40px;
+        margin: 0px
+    }
+
+    .number {
+        font-size: 40px
+    }
     </style>
-    <title>D3.js Tutorial</title>
-    <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
+
 <body>
-    <svg id="bar-chart"></svg>
-    <div id="line-plot"></div>
+    <div class="hbox">
+        <div id="daily-visits-line-plot"></div>
+        <!-- <div id="tooltip"></div> -->
+        <div>
+            <div class="hbox">
+                <h1 class="stat-header">Total Users: </h1>
+                <p id="total-users" class="stat-header"></p>
+            </div>
+            <div class="hbox">
+                <h1 class="stat-header">Total Visits: </h1>
+                <p id="total-visits" class="stat-header"></p>
+            </div>
+            <div class="hbox">
+                <h1 class="stat-header">Total Schedules: </h1>
+                <p id="total-schedules" class="stat-header"></p>
+            </div>
+        </div>
+    </div>
+    <div id="days-searched-bar-chart"></div>
+    <div class="hbox">
+        <div id="devices-pie-chart"></div>
+        <div id="browsers-pie-chart"></div>
+    </div>
+
+
+    <!-- Include the D3.js library -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <!-- Include your custom script file -->
     <script src="analytics.js"></script>
 </body>
+
 </html>
