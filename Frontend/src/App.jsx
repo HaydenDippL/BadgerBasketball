@@ -45,6 +45,16 @@ function App() {
     // tracks the window width for conditional rendering of date form
     const [window_width, set_window_width] = useState(window.innerWidth)
 
+    useEffect(() => {
+        const handleResize = () => {
+            set_window_width(window.innerWidth)
+        }
+        window.addEventListener('resize', handleResize)
+        return () => {
+            window.removeEventListener('resize', handleResize)
+        }
+    }, [])
+
     function show_modal(gym, court, start, end, sport) {
         setModal({
             gym: gym,
@@ -79,10 +89,11 @@ function App() {
                 <Legend preferences={preferences} setPreferences={setPreferences}/>
                 {!is_mobile && <DateForm date={date} setDate={setDate} is_mobile={is_mobile}/>}
             </div>
-            <div className={`${is_mobile ? 'vbox' : 'hbox'}`} style={{marginBottom: is_mobile ? '117px' : null}}>
+            <div className={`${is_mobile ? 'vbox' : 'hbox'}`}>
                 <Schedule show_modal={show_modal} gym={'Bakke'} preferences={preferences} date={date} user_data={user_data}/>
                 <Schedule show_modal={show_modal} gym={'Nick'} preferences={preferences} date={date} user_data={user_data}/>
             </div>
+            <p className='fine-print' style={{marginBottom: is_mobile ? '117px' : null}}>This site is neither affiliated nor endorsed by UW-Madison or Recwell.</p>
         </div>
         {is_mobile && <DateForm date={date} setDate={setDate} is_mobile={is_mobile}/>}
     </>
