@@ -61,10 +61,34 @@ function Schedule(props) {
         params.append('device', props.user_data.device)
         params.append('browser', props.user_data.browser)
 
-        // fetch('https://www.uwopenrecrosterbackend.xyz/data?' + params, { signal }) // legacy url
-        // fetch('http://localhost:3999/data?' + params, { signal }) // used for local testing
-        fetch("./.netlify/functions/schedule?" + params, { signal })
-            .then(res => res.json())
+        async function fetchWithRetry(url, options, retries=5) {
+            try {
+                const response = await fetch(url, options);
+                if (response.ok) {
+                    return await response.json();
+                } else if (response.status === 404 && retries > 0) {
+                    console.warn(`Received 404 error. Retrying... (${5 - retries} retries left)`);
+                    return fetchWithRetry(url, options, retries - 1);
+                } else {
+                    throw new Error(`Request failed with status: ${response.status}`);
+                }
+            } catch (error) {
+                if (retries > 0) {
+                    console.warn(`Fetch failed. Retrying... (${5 - retries} retries left)`);
+                    return fetchWithRetry(url, options, retries - 1);
+                } else {
+                    console.error("Request failed after multiple retries:", error);
+                    throw error; // If all retries fail, throw the error
+                }
+            }
+        };
+
+        // LOCAL TESTING
+        // const URL = "https://uwopenrecroster/.netlify/functions/schedule?";
+        // PRODUCTION CODE
+        const URL = "./.netlify/functions/schedule?";
+
+        fetchWithRetry(URL + params, { signal })
             .then(data => {
                 // if this is the current schedule, display it
                 if (!signal.aborted) {
@@ -72,6 +96,12 @@ function Schedule(props) {
                     set_skeleton(false)
                 }
             })
+            .catch(error => {
+                if (!signal.aborted) {
+                    console.error("Failed to fetch schedule:", error);
+                    set_skeleton(true); // Stop skeleton loading if there was an error
+                }
+            });
 
         return function cleanup() {
             abortController.abort()
