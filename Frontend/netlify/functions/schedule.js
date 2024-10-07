@@ -10,9 +10,25 @@ export async function handler(event, context) {
     const browser = event.queryStringParameters.browser;
     const IP = event.headers['x-forwarded-for'];
 
+    // Handle OPTIONS preflight request for CORS
+    if (event.httpMethod === "OPTIONS") {
+        return {
+            statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "GET",
+            },
+            body: "",
+        };
+    }
+
     if (!date.isValid) {
         return {
             statusCode: 400,
+            headers: {
+                "Access-Control-Allow-Origin": "*",  
+            },
             body: "Ensure that the date query is a valid date of the form \"yyyy-mm-dd\" where \"2025-01-01\" represents January 1rst, 2025."
         };
     }
@@ -20,6 +36,9 @@ export async function handler(event, context) {
     if (gym !== "Bakke" && gym !== "Nick") {
         return {
             statusCode: 400,
+            headers: {
+                "Access-Control-Allow-Origin": "*",  
+            },
             body: "Ensure that the gym query parameter is either \"Bakke\" or \"Nick\"."
         };
     }
@@ -27,6 +46,9 @@ export async function handler(event, context) {
     if (gym_facility !== "Courts") {
         return {
             statusCode: 400,
+            headers: {
+                "Access-Control-Allow-Origin": "*",  
+            },
             body: "Ensure that the gym_facility query parameter is \"Courts\"."
         };
     }
@@ -36,7 +58,13 @@ export async function handler(event, context) {
         schedule = await call_recwell(gym, date);
     } catch (error) {
         console.error(error);
-        res.status(500).send(error.message);
+        return {
+            statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+            },
+            body: JSON.stringify({ error: error.message }),
+        }
     }
 
     const query_date = DateTime.fromISO(date).setZone('America/Chicago').toISODate();
@@ -45,6 +73,9 @@ export async function handler(event, context) {
 
     return {
         statusCode: 200,
+        headers: {
+            "Access-Control-Allow-Origin": "*",  
+        },
         body: JSON.stringify(schedule)
     };
 }

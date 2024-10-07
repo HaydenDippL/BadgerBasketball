@@ -12,6 +12,20 @@ export async function handler(event, context) {
     const get_device_counts = req.query.get_device_counts || false;
     const get_browser_counts = req.query.get_browser_counts || false;
 
+    // Handle OPTIONS preflight request for CORS
+    if (event.httpMethod === "OPTIONS") {
+        return {
+            statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Headers": "Content-Type",
+                "Access-Control-Allow-Methods": "GET",
+            },
+            body: "",
+        };
+    }
+
+
     const analytics = {};
     
     // lifetime users
@@ -84,6 +98,9 @@ export async function handler(event, context) {
 
     return {
         statusCode: 200,
+        headers: {
+            "Access-Control-Allow-Origin": "*",  
+        },
         body: JSON.stringify(analytics)
     };
 }
