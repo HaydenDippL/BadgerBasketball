@@ -2,24 +2,33 @@ import { DateTime } from "luxon";
 import { logging } from "../helpers/logging";
 
 export async function handler(event, context) {
-    const date = DateTime.fromFormat(req.queryStringParameters.date, "yyyy-MM-dd");
-    const gym = req.queryStringParameters.gym;
-    const gym_facility = req.queryStringParameters.gym_facility;
-    const session_id = req.queryStringParameters.session_id;
-    const device = req.queryStringParameters.device;
-    const browser = req.queryStringParameters.browser;
-    const IP = req.ip; // FIXME: IP handling
+    const date = DateTime.fromFormat(event.queryStringParameters.date, "yyyy-MM-dd");
+    const gym = event.queryStringParameters.gym;
+    const gym_facility = event.queryStringParameters.gym_facility;
+    const session_id = event.queryStringParameters.session_id;
+    const device = event.queryStringParameters.device;
+    const browser = event.queryStringParameters.browser;
+    const IP = event.headers['x-forwarded-for'];
 
     if (!date.isValid) {
-        res.status(400).send("Ensure that the date query is a valid date of the form \"yyyy-mm-dd\" where \"2025-01-01\" represents January 1rst, 2025.");
+        return {
+            statusCode: 400,
+            body: "Ensure that the date query is a valid date of the form \"yyyy-mm-dd\" where \"2025-01-01\" represents January 1rst, 2025."
+        };
     }
 
     if (gym !== "Bakke" && gym !== "Nick") {
-        res.status(400).send("Ensure that the gym query parameter is either \"Bakke\" or \"Nick\".");
+        return {
+            statusCode: 400,
+            body: "Ensure that the gym query parameter is either \"Bakke\" or \"Nick\"."
+        };
     }
 
     if (gym_facility !== "Courts") {
-        res.status(400).send("Ensure that the gym_facility query parameter is \"Courts\".");
+        return {
+            statusCode: 400,
+            body: "Ensure that the gym_facility query parameter is \"Courts\"."
+        };
     }
 
     let schedule;
@@ -30,7 +39,9 @@ export async function handler(event, context) {
         res.status(500).send(error.message);
     }
 
-    // logging(query.toISODate(), gym, gym_facility, session_id, IP, now.toISODate(), now.toISOTime().substring(0, 8), device, browser)
+    const query_date = DateTime.fromISO(date).setZone('America/Chicago').toISODate();
+    const now = DateTime.now().setZone('America/Chicago');
+    logging(query_date, gym, gym_facility, session_id, IP, now.toISODate(), now.toISOTime().substring(0, 8), device, browser);
 
     return {
         statusCode: 200,

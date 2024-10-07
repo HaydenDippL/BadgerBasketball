@@ -61,11 +61,9 @@ function Schedule(props) {
         params.append('device', props.user_data.device)
         params.append('browser', props.user_data.browser)
 
-        // console.log('http://localhost:3999/data?' + params)
-
         // fetch('https://www.uwopenrecrosterbackend.xyz/data?' + params, { signal }) // legacy url
         // fetch('http://localhost:3999/data?' + params, { signal }) // used for local testing
-        fetch("./.netlify/functions/schedule")
+        fetch("./.netlify/functions/schedule?" + params, { signal })
             .then(res => res.json())
             .then(data => {
                 // if this is the current schedule, display it
