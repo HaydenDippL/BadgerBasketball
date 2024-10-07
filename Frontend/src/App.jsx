@@ -29,7 +29,7 @@ function App() {
     const [preferences, setPreferences] = useState({
         'Open Rec Basketball': false,
         'Open Rec Volleyball': false,
-        'Open Rec Badminton / Pickleball': false,
+        'Open Rec Badminton/Pickleball': false,
         'Open Rec Futsal': false
     })
 
