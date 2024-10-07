@@ -84,7 +84,7 @@ function Schedule(props) {
         };
 
         // LOCAL TESTING
-        // const URL = "https://uwopenrecroster/.netlify/functions/schedule?";
+        // const URL = "https://uwopenrecroster.com/.netlify/functions/schedule?";
         // PRODUCTION CODE
         const URL = "./.netlify/functions/schedule?";
 
