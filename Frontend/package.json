@@ -17,7 +17,7 @@
     "platfrom": "^9999.0.0",
     "react": "^18.2.0",
     "react-bootstrap": "^2.9.2",
-    "react-dom": "^18.2.0",
+    "react-dom": "^18.3.1",
     "react-router-dom": "^6.21.1",
     "serve": "^14.2.1",
     "uuid4": "^2.0.3"
