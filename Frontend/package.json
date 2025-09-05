@@ -19,7 +19,7 @@
     "react-bootstrap": "^2.9.2",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.21.1",
-    "serve": "^14.2.1",
+    "serve": "^14.2.5",
     "uuid4": "^2.0.3"
   },
   "devDependencies": {
